@@ -7,6 +7,8 @@ Egy teljesen szerverfüggetlen, **Peer-to-Peer (P2P)** alapú közösségi chat 
 ## ⚡ Főbb Funkciók
 
 * 💬 **P2P Beszélgetések & Topikok**: Valós idejű üzenetküldés közvetlenül a résztvevők böngészői között.
+* 📌 **Rögzített Üzenetek (Pinned Messages)**: Üzenetek kitűzése a jobb oldali oldalsávra (1-kattintásos ugrással az üzenethez).
+* 📁 **Média & Csatolmányok Füle**: Képek, videók és fájlok külön oldalsáv fülön való böngészése.
 * 📁 **Korlátlan Fájl- és Videómegosztás**: Közvetlen P2P adatátvitel a háttérben, méretkorlát nélkül.
 * 🫨 **MSN Nudge / Rezgetés**: Megrezgetheted a topikban lévő többiek ablakát a klasszikus MSN Messenger stílusában!
 * 🎵 **Kiválasztható Üzenethangok**:
@@ -31,6 +33,6 @@ Egy teljesen szerverfüggetlen, **Peer-to-Peer (P2P)** alapú közösségi chat 
 
 ## 🚀 Használat
 
-1. Nyisd meg a `p2p-reddit.html` fájlt bármilyen modern böngészőben.
+1. Nyisd meg a `ChatTT/index.html` fájlt bármilyen modern böngészőben.
 2. Add meg a felhasználónevedet és a Peer ID-dat (pl. `1` vagy `2`).
 3. Csatlakozz az ismerőseidhez és kezdődhet a beszélgetés!

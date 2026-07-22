@@ -196,14 +196,157 @@
 
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 2fr;
+            grid-template-columns: 260px 1fr auto;
             gap: 20px;
         }
 
-        @media (max-width: 768px) {
+        .main-content.right-panel-closed {
+            grid-template-columns: 260px 1fr;
+        }
+
+        @media (max-width: 900px) {
             .main-content {
                 grid-template-columns: 1fr;
             }
+            .right-panel {
+                width: 100% !important;
+            }
+        }
+
+        .right-panel {
+            width: 320px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            padding: 1.2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            transition: all 0.3s ease;
+        }
+
+        .right-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--input-border);
+            margin-bottom: 12px;
+        }
+
+        .right-panel-tabs {
+            display: flex;
+            gap: 6px;
+        }
+
+        .right-tab {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .right-tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .right-panel-body {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 4px;
+        }
+
+        .pinned-card {
+            background: var(--peer-info-bg);
+            border-left: 4px solid var(--primary-color);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .pinned-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .pinned-card .pinned-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            opacity: 0.75;
+            margin-bottom: 4px;
+        }
+
+        .pinned-card .unpin-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            opacity: 0.6;
+            color: #ef4444;
+            padding: 0 2px;
+        }
+
+        .pinned-card .unpin-btn:hover {
+            opacity: 1;
+        }
+
+        .media-card {
+            background: var(--peer-info-bg);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            border: 1px solid var(--input-border);
+        }
+
+        .media-card img {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 6px;
+            object-fit: cover;
+            cursor: pointer;
+            display: block;
+        }
+
+        .pin-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            margin-left: 6px;
+            color: inherit;
+        }
+
+        .message:hover .pin-btn {
+            opacity: 0.8;
+        }
+        
+        .message.is-pinned {
+            border-left: 3px solid #f59e0b;
+        }
+
+        .message.is-pinned .pin-btn {
+            opacity: 1;
+            color: #f59e0b;
         }
 
         .sidebar {
@@ -808,7 +951,10 @@
             <div class="chat-area">
                 <div class="chat-header">
                     <h3 id="current-topic-name">Válassz egy topikot</h3>
-                    <button id="export-txt-btn" class="btn btn-primary" onclick="exportTopicToTxt()" style="display: none; font-size: 13px;">📥 Mentés TXT-ként</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="export-txt-btn" class="btn btn-primary" onclick="exportTopicToTxt()" style="display: none; font-size: 13px;">📥 Mentés TXT-ként</button>
+                        <button id="right-panel-toggle-btn" class="btn" onclick="toggleRightPanel()" style="font-size: 13px; background: var(--input-bg); color: var(--text-color); border: 1px solid var(--input-border);" title="📌 Rögzített üzenetek & Média oldalsáv be/kikapcsolása">📌 Rögzítettek & Média</button>
+                    </div>
                 </div>
                 <div class="messages" id="messages"></div>
                 <div class="reply-preview" id="reply-preview">
@@ -837,6 +983,23 @@
                     </div>
                 </div>
             </div>
+
+            <!-- RIGHT PANEL SIDEBAR: Pinned Messages & Media Files Tabs -->
+            <div class="right-panel" id="right-panel">
+                <div class="right-panel-header">
+                    <div class="right-panel-tabs">
+                        <button class="right-tab active" id="tab-btn-pins" onclick="switchRightTab('pins')">📌 Pined (<span id="pins-count">0</span>)</button>
+                        <button class="right-tab" id="tab-btn-media" onclick="switchRightTab('media')">📁 Média (<span id="media-count">0</span>)</button>
+                    </div>
+                    <button onclick="toggleRightPanel()" style="background: transparent; border: none; font-size: 16px; cursor: pointer; color: inherit;" title="Bezárás">✖</button>
+                </div>
+                <div class="right-panel-body" id="right-tab-content-pins">
+                    <div class="empty-state" style="padding: 1.5rem; font-size: 13px;">Még nincsenek rögzített üzenetek ebben a topikban.<br><br><i>Kattints az üzenetek melletti 📌 ikonra a kitűzéshez!</i></div>
+                </div>
+                <div class="right-panel-body" id="right-tab-content-media" style="display: none;">
+                    <div class="empty-state" style="padding: 1.5rem; font-size: 13px;">Még nincsenek feltöltött fájlok ebben a topikban.</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -860,6 +1023,9 @@
         let soundType = localStorage.getItem('p2p_sound_type') || 'msn';
         let lastNudgeTime = 0;
 
+        let rightPanelOpen = localStorage.getItem('p2p_right_panel_open') !== 'false';
+        let activeRightTab = 'pins';
+
         // Initialize
         function init() {
             loadTheme();
@@ -870,6 +1036,7 @@
             loadHostedFiles();
             updateSoundButton();
             loadSoundType();
+            updateRightPanelVisibility();
             
             const savedUsername = localStorage.getItem('p2p_username');
             const savedPeerId = localStorage.getItem('p2p_peer_id') || '1';
@@ -1062,6 +1229,171 @@
 
             const msg = isOwn ? `🫨 Megrezgetted a beszélgetést!` : `🫨 @${senderName} MEGREZGETTE A BESZÉLGETÉST!`;
             showNotification(msg);
+        }
+
+        // Right Panel Sidebar functions (Pinned Messages & Media Files)
+        function toggleRightPanel() {
+            rightPanelOpen = !rightPanelOpen;
+            localStorage.setItem('p2p_right_panel_open', rightPanelOpen ? 'true' : 'false');
+            updateRightPanelVisibility();
+        }
+
+        function updateRightPanelVisibility() {
+            const panel = document.getElementById('right-panel');
+            const layout = document.querySelector('.main-content');
+            const btn = document.getElementById('right-panel-toggle-btn');
+            
+            if (panel) {
+                panel.style.display = rightPanelOpen ? 'flex' : 'none';
+            }
+            if (layout) {
+                if (rightPanelOpen) {
+                    layout.classList.remove('right-panel-closed');
+                } else {
+                    layout.classList.add('right-panel-closed');
+                }
+            }
+            if (btn) {
+                btn.style.opacity = rightPanelOpen ? '1' : '0.65';
+            }
+            if (rightPanelOpen) {
+                renderRightPanel();
+            }
+        }
+
+        function switchRightTab(tabName) {
+            activeRightTab = tabName;
+            const btnPins = document.getElementById('tab-btn-pins');
+            const btnMedia = document.getElementById('tab-btn-media');
+            const contentPins = document.getElementById('right-tab-content-pins');
+            const contentMedia = document.getElementById('right-tab-content-media');
+
+            if (tabName === 'pins') {
+                if (btnPins) btnPins.classList.add('active');
+                if (btnMedia) btnMedia.classList.remove('active');
+                if (contentPins) contentPins.style.display = 'flex';
+                if (contentMedia) contentMedia.style.display = 'none';
+            } else {
+                if (btnPins) btnPins.classList.remove('active');
+                if (btnMedia) btnMedia.classList.add('active');
+                if (contentPins) contentPins.style.display = 'none';
+                if (contentMedia) contentMedia.style.display = 'flex';
+            }
+            renderRightPanel();
+        }
+
+        function togglePinMessage(msgId) {
+            if (!currentTopic || !data.messages[currentTopic]) return;
+            const msg = data.messages[currentTopic].find(m => m.id === msgId);
+            if (!msg) return;
+
+            msg.pinned = !msg.pinned;
+            saveData();
+
+            broadcast({
+                type: 'toggle_pin',
+                topicId: currentTopic,
+                messageId: msgId,
+                pinned: msg.pinned
+            });
+
+            if (msg.pinned) {
+                showNotification('📌 Üzenet rögzítve az oldalsávra!');
+            } else {
+                showNotification('📌 Üzenet rögzítése feloldva.');
+            }
+
+            renderMessages();
+        }
+
+        function renderRightPanel() {
+            if (!currentTopic || !data.messages[currentTopic]) {
+                const pinsCount = document.getElementById('pins-count');
+                const mediaCount = document.getElementById('media-count');
+                if (pinsCount) pinsCount.textContent = '0';
+                if (mediaCount) mediaCount.textContent = '0';
+                return;
+            }
+
+            const messages = data.messages[currentTopic];
+            const pinnedMsgs = messages.filter(m => m.pinned);
+            const mediaMsgs = messages.filter(m => m.attachment || (m.content && /(https?:\/\/[^\s<]+)/i.test(m.content)));
+
+            const pinsCountEl = document.getElementById('pins-count');
+            const mediaCountEl = document.getElementById('media-count');
+            if (pinsCountEl) pinsCountEl.textContent = pinnedMsgs.length.toString();
+            if (mediaCountEl) mediaCountEl.textContent = mediaMsgs.length.toString();
+
+            // 1. Render Pinned Messages Tab
+            const pinsContainer = document.getElementById('right-tab-content-pins');
+            if (pinsContainer) {
+                if (pinnedMsgs.length === 0) {
+                    pinsContainer.innerHTML = '<div class="empty-state" style="padding: 1.5rem; font-size: 13px;">Még nincsenek rögzített üzenetek ebben a topikban.<br><br><i>Kattints bármelyik üzenet melletti 📌 ikonra a kitűzéshez!</i></div>';
+                } else {
+                    pinsContainer.innerHTML = '';
+                    pinnedMsgs.forEach(msg => {
+                        const card = document.createElement('div');
+                        card.className = 'pinned-card';
+                        
+                        const dateObj = new Date(msg.timestamp);
+                        const timeStr = dateObj.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' });
+                        const shortText = msg.content ? msg.content.substring(0, 100) : (msg.attachment ? `📎 ${msg.attachment.name}` : '');
+
+                        card.onclick = () => jumpToMessage(msg.id);
+                        card.innerHTML = `
+                            <div class="pinned-meta">
+                                <span><strong>@${escapeHtml(msg.username)}</strong> • ${timeStr}</span>
+                                <button class="unpin-btn" onclick="event.stopPropagation(); togglePinMessage('${msg.id}')" title="Üzenet unpinelése">✖ Unpin</button>
+                            </div>
+                            <div>${escapeHtml(shortText)}${msg.content && msg.content.length > 100 ? '...' : ''}</div>
+                        `;
+                        pinsContainer.appendChild(card);
+                    });
+                }
+            }
+
+            // 2. Render Media & Files Tab
+            const mediaContainer = document.getElementById('right-tab-content-media');
+            if (mediaContainer) {
+                if (mediaMsgs.length === 0) {
+                    mediaContainer.innerHTML = '<div class="empty-state" style="padding: 1.5rem; font-size: 13px;">Még nincsenek csatolt fájlok vagy hivatkozások ebben a topikban.</div>';
+                } else {
+                    mediaContainer.innerHTML = '';
+                    mediaMsgs.forEach(msg => {
+                        const card = document.createElement('div');
+                        card.className = 'media-card';
+                        
+                        const dateObj = new Date(msg.timestamp);
+                        const timeStr = dateObj.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' });
+                        
+                        let mediaContentHtml = '';
+                        if (msg.attachment) {
+                            const fileId = msg.attachment.fileId;
+                            const fileObj = fileId ? hostedFiles[fileId] : (msg.attachment.data ? msg.attachment : null);
+                            
+                            if (fileObj && fileObj.type && fileObj.type.startsWith('image/')) {
+                                mediaContentHtml = `<img src="${fileObj.data}" alt="${escapeHtml(fileObj.name)}" onclick="jumpToMessage('${msg.id}')" title="Ugrás az üzenethez">`;
+                            } else {
+                                mediaContentHtml = `<div>📎 <strong>${escapeHtml(msg.attachment.name)}</strong> (${formatFileSize(msg.attachment.size)})</div>`;
+                            }
+                        } else if (msg.content) {
+                            const match = msg.content.match(/(https?:\/\/[^\s<]+)/i);
+                            if (match) {
+                                mediaContentHtml = `<div>🔗 <a href="${match[0]}" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline;">${escapeHtml(match[0].substring(0, 45))}${match[0].length > 45 ? '...' : ''}</a></div>`;
+                            }
+                        }
+
+                        card.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; opacity: 0.75;">
+                                <span><strong>@${escapeHtml(msg.username)}</strong> • ${timeStr}</span>
+                                <button onclick="jumpToMessage('${msg.id}')" style="background: transparent; border: none; cursor: pointer; color: var(--primary-color); font-weight: bold;">Ugrás 🎯</button>
+                            </div>
+                            ${mediaContentHtml}
+                        `;
+                        mediaContainer.appendChild(card);
+                    });
+                }
+            }
         }
 
         function getComputedColorHex(propName, fallbackHex = '#667eea') {
@@ -2223,11 +2555,14 @@
                 const formattedContent = msg.content ? formatMessageContent(msg.content) : '';
                 const msgContentForReply = JSON.stringify(msg.content || (msg.attachment ? msg.attachment.name : '')).replace(/'/g, "\\'");
                 
+                div.className = 'message' + (msg.username === username ? ' own' : '') + (msg.pinned ? ' is-pinned' : '');
+
                 div.innerHTML = `
                     <div>
                         <span class="username">${escapeHtml(msg.username)}</span>
                         <span class="timestamp">${timeStr}</span>
                         <button class="reply-btn" onclick='startReply("${msg.id}", "${escapeHtml(msg.username)}", ${msgContentForReply})' title="Válasz erre az üzenetre">↩️ Válasz</button>
+                        <button class="pin-btn" onclick='togglePinMessage("${msg.id}")' title="${msg.pinned ? 'Rögzítés feloldása' : 'Üzenet rögzítése az oldalsávra'}">${msg.pinned ? '📌 Kitűzve' : '📌 Pin'}</button>
                     </div>
                     ${replyQuoteHtml}
                     ${formattedContent ? `<div class="content">${formattedContent}</div>` : ''}
@@ -2237,6 +2572,7 @@
             });
 
             container.scrollTop = container.scrollHeight;
+            renderRightPanel();
         }
 
         function saveDeletedTopics() {
