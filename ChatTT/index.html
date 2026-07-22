@@ -1933,6 +1933,7 @@
                 if (metadata.type === 'screen-share') {
                     incomingCall.answer();
                     incomingCall.on('stream', (remoteStream) => {
+                        lastRemoteStream = remoteStream;
                         const callerId = incomingCall.peer;
                         const callerName = knownUsers[callerId] ? knownUsers[callerId].username : callerId;
                         showDockedStream(remoteStream, `🔴 LIVE Stream @${callerName}`);
@@ -2201,7 +2202,7 @@
             // Peer count is now shown in user list
         }
 
-        const CURRENT_APP_VERSION = "2.8";
+        const CURRENT_APP_VERSION = "2.9";
         let detectedNewVersion = null;
 
         function checkAppVersion() {
@@ -2468,6 +2469,7 @@
         }
 
         let activeStreamCallerId = null;
+        let lastRemoteStream = null;
 
         function showStreamInviteBanner(callerId, callerName) {
             activeStreamCallerId = callerId;
@@ -2482,16 +2484,45 @@
             if (banner) banner.style.display = 'none';
         }
 
+        function watchUserStream(targetPeerId) {
+            if (targetPeerId) {
+                activeStreamCallerId = targetPeerId;
+            } else if (!activeStreamCallerId) {
+                for (const pid in knownUsers) {
+                    if (knownUsers[pid].isStreaming && pid !== peer?.id) {
+                        activeStreamCallerId = pid;
+                        break;
+                    }
+                }
+            }
+            acceptStreamInvite();
+        }
+
         function acceptStreamInvite() {
             hideStreamInviteBanner();
+
+            // Instantly display stream player container so the user sees the pop-up immediately
+            const callerName = activeStreamCallerId && knownUsers[activeStreamCallerId] ? knownUsers[activeStreamCallerId].username : 'Partner';
+            const container = document.getElementById('discord-stream-container');
+            const title = document.getElementById('docked-stream-title');
+            if (title) title.textContent = `🔴 LIVE Stream @${callerName} (Kapcsolódás...)`;
+            if (container) container.style.display = 'flex';
+
+            if (lastRemoteStream) {
+                showDockedStream(lastRemoteStream, `🔴 LIVE Stream @${callerName}`);
+            }
+
+            // Send P2P request for stream to the target caller or all connections
             if (activeStreamCallerId) {
                 const conn = connections.find(c => c.peer === activeStreamCallerId);
-                if (conn) {
+                if (conn && conn.open) {
                     conn.send({ type: 'request_stream_join' });
-                    showNotification(`▶️ Csatlakozás @${knownUsers[activeStreamCallerId]?.username || activeStreamCallerId} streamjéhez...`);
-                } else if (connections && connections.length > 0) {
-                    connections[0].send({ type: 'request_stream_join' });
+                    showNotification(`▶️ Csatlakozás @${callerName} streamjéhez...`);
+                } else {
+                    connections.forEach(c => { if (c.open) c.send({ type: 'request_stream_join' }); });
                 }
+            } else {
+                connections.forEach(c => { if (c.open) c.send({ type: 'request_stream_join' }); });
             }
         }
 
@@ -2501,17 +2532,6 @@
 
         // Discord-Style Screen Share / Video Streaming (Non-blocking Chat)
         function startScreenShare(targetPeerId) {
-            if (!targetPeerId) {
-                if (!connections || connections.length === 0) {
-                    showNotification('Nincs csatlakozott online partner a streameléshez!', 'error');
-                    return;
-                }
-                targetPeerId = connections[0].peer;
-            }
-
-            const peerInfo = knownUsers[targetPeerId];
-            const peerName = peerInfo ? peerInfo.username : targetPeerId;
-
             if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
                 showNotification('A böngésződ nem támogatja a képernyőmegosztást (getDisplayMedia)!', 'error');
                 return;
@@ -2523,12 +2543,22 @@
                 .then(stream => {
                     localScreenStream = stream;
                     
-                    showDockedStream(stream, `🔴 Saját LIVE Stream - Adás @${peerName} felé`);
+                    if (peer && peer.id && knownUsers[peer.id]) {
+                        knownUsers[peer.id].isStreaming = true;
+                    }
+                    renderUserList();
 
-                    const screenCall = peer.call(targetPeerId, stream, { metadata: { type: 'screen-share' } });
-                    activeScreenCall = screenCall;
+                    showDockedStream(stream, `🔴 Saját LIVE Stream - Képernyő Adás`);
+
+                    // Call all active connections with screen stream
+                    connections.forEach(conn => {
+                        if (conn.open) {
+                            peer.call(conn.peer, localScreenStream, { metadata: { type: 'screen-share' } });
+                        }
+                    });
 
                     broadcast({ type: 'stream_started', callerId: peer.id, callerName: username });
+                    broadcastPresence();
 
                     // Post automated stream announcement message to current active chat topic
                     if (currentTopic) {
@@ -2556,10 +2586,6 @@
                     stream.getVideoTracks()[0].onended = () => {
                         stopScreenShare();
                     };
-
-                    screenCall.on('close', () => {
-                        stopScreenShare();
-                    });
                 })
                 .catch(err => {
                     if (err.name !== 'NotAllowedError') {
@@ -2584,10 +2610,16 @@
             const video = document.getElementById('docked-stream-video');
             const title = document.getElementById('docked-stream-title');
 
-            if (title) title.textContent = titleText;
+            if (title) title.textContent = titleText || '🔴 LIVE Stream';
             if (video) {
-                video.srcObject = stream;
-                video.play().catch(e => console.warn('Docked stream play error:', e));
+                if (video.srcObject !== stream) {
+                    video.srcObject = stream;
+                }
+                video.play().catch(err => {
+                    console.warn('Autoplay with sound blocked by browser, attempting muted playback:', err);
+                    video.muted = true;
+                    video.play().catch(e => console.error('Video play failed:', e));
+                });
             }
             if (container) container.style.display = 'flex';
         }
