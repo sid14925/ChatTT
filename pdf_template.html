@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatTT - Okos Fejlesztési Útmutató (Antigravity & GitHub)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Fira+Code:wght@400;600&display=swap');
+
+        @page {
+            size: A4;
+            margin: 20mm 15mm 20mm 15mm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #1e293b;
+            background: #ffffff;
+            line-height: 1.6;
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .header-banner {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+            padding: 24px 28px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 20px rgba(30, 60, 114, 0.15);
+        }
+
+        .header-banner h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-banner p {
+            font-size: 13px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .section-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            page-break-inside: avoid;
+        }
+
+        .section-card h2 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 12px;
+            font-size: 13.5px;
+        }
+
+        ul li::before {
+            content: "•";
+            color: #2a5298;
+            font-weight: bold;
+            font-size: 20px;
+            position: absolute;
+            left: 6px;
+            top: -3px;
+        }
+
+        ul li strong {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .quote-box {
+            background: #f8fafc;
+            border-left: 4px solid #2a5298;
+            padding: 10px 14px;
+            margin: 8px 0;
+            border-radius: 0 8px 8px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 12.5px;
+            color: #0f172a;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .step-item {
+            background: #f1f5f9;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .step-item .step-num {
+            font-weight: 800;
+            color: #2a5298;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .step-item p {
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .badge-list {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .badge {
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #bfdbfe;
+        }
+
+        .footer {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 11px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-banner">
+        <h1>🌐 ChatTT - Okos Fejlesztési Útmutató</h1>
+        <p>Párhuzamos együttműködés Alexszal (adamcsaka) az Antigravity AI és GitHub segítségével</p>
+    </div>
+
+    <div class="section-card">
+        <h2>1. 🔄 A Git & GitHub Munkamenet (Branching & Remotes)</h2>
+        <p style="margin-bottom: 12px; color: #475569;">A független és tiszta fejlesztés érdekében használjátok a <strong>Feature Branch</strong> modellt:</p>
+        
+        <ul>
+            <li>
+                <strong>Saját fejlesztési ágak (Branch-ek) használata:</strong><br>
+                Ne dolgozzatok közvetlenül a <code>main</code> ágon. Ha egy új funkción (pl. <em>hangüzenetek</em> vagy <em>MSN Custom Status</em>) dolgozol, kérd meg az Antigravity-t:
+                <div class="quote-box">"Hozz létre egy feature/voice-messages git ágat és ott valósítsuk meg a funkciót."</div>
+            </li>
+            <li>
+                <strong>Pull Request (PR) küldése Alexnak:</strong><br>
+                Amikor elkészül egy funkció, az Antigravity segítségével vagy a GitHubon küldj egy <strong>Pull Request</strong>-et Alex repójába (<code>adamcsaka/ChatTT</code>). Alex átnézheti és egy kattintással beolvaszthatja a fő repóba.
+            </li>
+            <li>
+                <strong>Upstream frissítések lekérése 1 paranccsal:</strong><br>
+                Bármikor, amikor Alex fejleszt valamit a saját repójában, csak mondd ezt az Antigravity-nek:
+                <div class="quote-box">"Frissítsük és mergeljük a legújabb upstream módosításokat Alex repójából!"</div>
+                Az Antigravity lefuttatja a <code>git fetch upstream</code> és <code>git merge upstream/main</code> parancsokat, és kezeli az esetleges ütközéseket.
+            </li>
+        </ul>
+    </div>
+
+    <div class="section-card">
+        <h2>2. 🤖 Az Antigravity AI Okos Használata</h2>
+        <p style="margin-bottom: 12px; color: #475569;">Az Antigravity nem csak kódot ír, hanem automatizálja az egész munkafolyamatot:</p>
+
+        <ul>
+            <li>
+                <strong>Automatikus Élő Tesztelés és Weboldal Telepítés (GitHub Pages):</strong><br>
+                Minden alkalommal, amikor elkészül egy frissítés, az Antigravity automatikusan pushol a GitHubra. Az élő tesztkörnyezeted mindig elérhető a <strong>https://sid14925.github.io/ChatTT/</strong> címen.
+            </li>
+            <li>
+                <strong>Automatikus EXE Fordítás:</strong><br>
+                Nem kell manuálisan fordítanotok a Windows futtatható fájlokat; az Antigravity a háttérben legenerálja a legfrissebb <code>.exe</code> fájlt és a hordozható ZIP-et.
+            </li>
+            <li>
+                <strong>Összetett Funkciók Tervezése (Planning Mode):</strong><br>
+                Ha egy komolyabb újítást szeretnétek (pl. <em>Videóhívás WebRTC-vel</em>), használd a <code>/grill-me</code> parancsot, vagy kérd meg az Antigravity-t, hogy készítsen egy részletes <code>implementation_plan.md</code> tervet a megvalósítás előtt.
+            </li>
+        </ul>
+    </div>
+
+    <div class="section-card">
+        <h2>3. 🎯 Gyakorlati Munkaterv (Példa egy közös fejlesztési napra)</h2>
+        
+        <div class="steps-grid">
+            <div class="step-item">
+                <div class="step-num">1. LÉPÉS - Szinkronizáció</div>
+                <p><strong>Antigravity:</strong> <em>"Nézd meg van-e új commit Alex repójában, és szinkronizáld a helyi kódunkat!"</em></p>
+            </div>
+            <div class="step-item">
+                <div class="step-num">2. LÉPÉS - Új Funkció</div>
+                <p><strong>Új Branch:</strong> Készítsetek egyedi állapotüzeneteket egy új git ágon.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num">3. LÉPÉS - Teszt & EXE</div>
+                <p><strong>Automata Csomagolás:</strong> Tesztelés, EXE csomagolás és push a GitHubra.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num">4. LÉPÉS - Merge Alexnak</div>
+                <p><strong>Pull Request:</strong> Nyiss PR-t az <code>adamcsaka/ChatTT</code> repó felé a kód egyesítéséhez.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card" style="margin-bottom: 0;">
+        <h2>💡 Hasznos Parancsok az Antigravity-ben</h2>
+        <div class="badge-list">
+            <div class="badge">/grill-me - Architektúra Tervezés</div>
+            <div class="badge">/goal - Önmagát Vezérlő Tervezés</div>
+            <div class="badge">/schedule - Háttér Időzítés</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Generálva az Antigravity AI által • ChatTT MSN Messenger Edition • 2026. július 22.
+    </div>
+
+</body>
+</html>

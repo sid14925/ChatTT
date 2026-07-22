@@ -1169,6 +1169,7 @@
                 else if (type === 'send') fileName = 'outgoing.mp3';
                 else if (type === 'email') fileName = 'newemail.mp3';
                 else if (type === 'alert') fileName = 'newalert.mp3';
+                else if (type === 'phone') fileName = 'phone.mp3';
 
                 const audio = new Audio('sounds/' + fileName);
                 audio.play().catch(e => console.warn('Audio play error:', e));
@@ -1899,7 +1900,7 @@
                         data.messages[received.topicId] = [];
                         saveData();
                         renderTopics();
-                        playMsnSound('message');
+                        playMsnSound('alert');
                     }
                     break;
                 case 'new_message':
@@ -1911,11 +1912,16 @@
                     saveData();
                     if (currentTopic === received.topicId) {
                         renderMessages();
+                        renderRightPanel();
                     }
                     if (received.message.isNudge) {
                         triggerNudgeEffect(received.message.username);
                     } else if (received.message.username !== username) {
-                        playMsnSound('message');
+                        if (received.message.attachment) {
+                            playMsnSound('email');
+                        } else {
+                            playMsnSound('message');
+                        }
                     }
                     break;
                 case 'presence':
@@ -1963,6 +1969,7 @@
                         hostedFiles[received.fileId] = received.fileObj;
                         saveHostedFiles();
                         renderMessages();
+                        playMsnSound('email');
                         triggerBrowserDownload(received.fileObj);
                     }
                     break;
