@@ -1,5 +1,5 @@
 {
-  "version": "2.5",
-  "buildDate": "2026-07-22T21:21:00Z",
-  "changelog": "Added Microphone Input Device Selector, Discord-style Screen Sharing & Video Streaming, and Auto-Update F5 notification popup"
+  "version": "2.6",
+  "buildDate": "2026-07-22T21:32:00Z",
+  "changelog": "Added Discord-style Opt-In Stream Invitations, Docked In-Chat Live Video Player (non-blocking chat), and classic MSN smile.png emoji button icon"
 }

@@ -1091,6 +1091,35 @@
                 </div>
                 <audio id="remote-audio-player" autoplay style="display: none;"></audio>
 
+                <!-- Stream Invitation Banner (Opt-In Discord Style) -->
+                <div id="stream-invite-banner" style="display: none; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 10px 16px; border-radius: 8px; margin: 10px 10px 0 10px; align-items: center; justify-content: space-between; box-shadow: 0 4px 14px rgba(99,102,241,0.35);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 22px;">🖥️</span>
+                        <div>
+                            <strong id="stream-invite-text">@felhasználó élő adást indított!</strong>
+                            <div style="font-size: 11px; opacity: 0.9;">Kattints a csatlakozáshoz, ha szeretnéd élőben nézni a streamet.</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="acceptStreamInvite()" class="btn btn-primary" style="background: #22c55e; border-color: #16a34a; font-weight: bold; font-size: 12px; cursor: pointer;">▶️ Csatlakozás a Streamhez</button>
+                        <button onclick="dismissStreamInvite()" class="btn" style="background: rgba(255,255,255,0.2); color: white; font-size: 12px; cursor: pointer;">Mégse</button>
+                    </div>
+                </div>
+
+                <!-- Docked Live Video Stream Player (Discord Style - Non-Blocking Chat) -->
+                <div id="discord-stream-container" style="display: none; background: #0b0f19; border-radius: 10px; margin: 10px 10px 0 10px; border: 2px solid var(--primary-color); overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); flex-direction: column;">
+                    <div style="background: rgba(15,23,42,0.9); color: white; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <span id="docked-stream-title" style="font-weight: bold; color: #818cf8; display: flex; align-items: center; gap: 6px;">🔴 LIVE Stream</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="toggleStreamFullscreen()" class="btn" style="padding: 3px 10px; font-size: 12px; background: rgba(255,255,255,0.15); color: white; cursor: pointer;" title="Teljes képernyő">⛶ Teljes Képernyő</button>
+                            <button onclick="leaveStream()" class="btn btn-danger" style="padding: 3px 10px; font-size: 12px; cursor: pointer;">❌ Stream Bezárása</button>
+                        </div>
+                    </div>
+                    <div style="position: relative; background: #000; display: flex; justify-content: center; align-items: center;">
+                        <video id="docked-stream-video" autoplay playsinline style="width: 100%; max-height: 380px; object-fit: contain; background: #000; display: block;"></video>
+                    </div>
+                </div>
+
                 <div class="chat-header">
                     <h3 id="current-topic-name">Válassz egy topikot</h3>
                     <div style="display: flex; gap: 8px;">
@@ -1112,7 +1141,7 @@
                 <div class="chat-input" style="position: relative;">
                     <input type="file" id="file-input" style="display: none;" onchange="handleFileSelect(event)">
                     <button class="btn" style="background: #edf2f7; color: #4a5568; padding: 8px 12px;" onclick="triggerFileSelect()" title="Kép / Fájl csatolása">📎</button>
-                    <button class="btn" style="background: #edf2f7; color: #4a5568; padding: 8px 12px; font-size: 16px;" onclick="toggleEmojiPicker(event)" title="MSN Emotikonok">😊</button>
+                    <button class="btn" style="background: #edf2f7; color: #4a5568; padding: 6px 10px;" onclick="toggleEmojiPicker(event)" title="MSN Emotikonok"><img src="smile.png" alt="😊" style="width: 19px; height: 19px; vertical-align: middle; display: inline-block;"></button>
                     <button class="btn" style="background: #f59e0b; color: white; padding: 8px 12px; font-weight: bold;" onclick="sendNudge()" title="Rengés küldése (MSN Nudge)">⚡ Rengés</button>
                     <input type="text" id="message-input" placeholder="Írj üzenetet..." onkeypress="handleKeyPress(event)">
                     <button class="btn btn-primary" onclick="sendMessage()">Küldés</button>
@@ -1120,7 +1149,7 @@
                     <!-- Emoji Picker Popover -->
                     <div id="emoji-picker" class="emoji-picker-popover" style="display: none;">
                         <div class="emoji-picker-header">
-                            <span>😊 MSN Emotikonok</span>
+                            <span><img src="smile.png" alt="😊" style="width: 17px; height: 17px; vertical-align: middle; margin-right: 4px;"> MSN Emotikonok</span>
                             <button onclick="toggleEmojiPicker(event)" style="background: transparent; border: none; font-size: 14px; cursor: pointer; color: inherit;">✖</button>
                         </div>
                         <div class="emoji-grid" id="emoji-grid"></div>
@@ -1888,8 +1917,8 @@
                     incomingCall.on('stream', (remoteStream) => {
                         const callerId = incomingCall.peer;
                         const callerName = knownUsers[callerId] ? knownUsers[callerId].username : callerId;
-                        showStreamViewerModal(remoteStream, `🖥️ @${callerName} Élő Stream / Képernyője`, false);
-                        showNotification(`🖥️ @${callerName} képernyőmegosztást indított!`);
+                        showDockedStream(remoteStream, `🔴 LIVE Stream @${callerName}`);
+                        showNotification(`🖥️ Csatlakozva @${callerName} streamjéhez!`);
                     });
                 } else {
                     activeMediaCall = incomingCall;
@@ -2156,7 +2185,7 @@
             // Peer count is now shown in user list
         }
 
-        const CURRENT_APP_VERSION = "2.5";
+        const CURRENT_APP_VERSION = "2.6";
         let detectedNewVersion = null;
 
         function checkAppVersion() {
@@ -2411,7 +2440,39 @@
             }
         }
 
-        // Discord-Style Screen Share / Video Streaming
+        let activeStreamCallerId = null;
+
+        function showStreamInviteBanner(callerId, callerName) {
+            activeStreamCallerId = callerId;
+            const banner = document.getElementById('stream-invite-banner');
+            const textEl = document.getElementById('stream-invite-text');
+            if (textEl) textEl.textContent = `@${callerName} élő adást / képernyőmegosztást indított!`;
+            if (banner) banner.style.display = 'flex';
+        }
+
+        function hideStreamInviteBanner() {
+            const banner = document.getElementById('stream-invite-banner');
+            if (banner) banner.style.display = 'none';
+        }
+
+        function acceptStreamInvite() {
+            hideStreamInviteBanner();
+            if (activeStreamCallerId) {
+                const conn = connections.find(c => c.peer === activeStreamCallerId);
+                if (conn) {
+                    conn.send({ type: 'request_stream_join' });
+                    showNotification(`▶️ Csatlakozás @${knownUsers[activeStreamCallerId]?.username || activeStreamCallerId} streamjéhez...`);
+                } else if (connections && connections.length > 0) {
+                    connections[0].send({ type: 'request_stream_join' });
+                }
+            }
+        }
+
+        function dismissStreamInvite() {
+            hideStreamInviteBanner();
+        }
+
+        // Discord-Style Screen Share / Video Streaming (Non-blocking Chat)
         function startScreenShare(targetPeerId) {
             if (!targetPeerId) {
                 if (!connections || connections.length === 0) {
@@ -2435,10 +2496,12 @@
                 .then(stream => {
                     localScreenStream = stream;
                     
-                    showStreamViewerModal(stream, `🖥️ Saját Stream - Élő adás @${peerName} felé`, true);
+                    showDockedStream(stream, `🔴 Saját LIVE Stream - Adás @${peerName} felé`);
 
                     const screenCall = peer.call(targetPeerId, stream, { metadata: { type: 'screen-share' } });
                     activeScreenCall = screenCall;
+
+                    broadcast({ type: 'stream_started', callerId: peer.id, callerName: username });
 
                     stream.getVideoTracks()[0].onended = () => {
                         stopScreenShare();
@@ -2456,28 +2519,27 @@
                 });
         }
 
-        function showStreamViewerModal(stream, titleText, isOwn = false) {
-            const modal = document.getElementById('stream-viewer-modal');
-            const video = document.getElementById('screen-stream-video');
-            const title = document.getElementById('stream-modal-title');
-            const stopBtn = document.getElementById('stop-stream-btn');
+        function showDockedStream(stream, titleText) {
+            const container = document.getElementById('discord-stream-container');
+            const video = document.getElementById('docked-stream-video');
+            const title = document.getElementById('docked-stream-title');
 
             if (title) title.textContent = titleText;
-            if (stopBtn) stopBtn.style.display = isOwn ? 'inline-block' : 'none';
-
             if (video) {
                 video.srcObject = stream;
-                video.play().catch(e => console.warn('Stream play error:', e));
+                video.play().catch(e => console.warn('Docked stream play error:', e));
             }
-            if (modal) modal.style.display = 'flex';
+            if (container) container.style.display = 'flex';
         }
 
-        function closeStreamViewerModal() {
-            const modal = document.getElementById('stream-viewer-modal');
-            if (modal) modal.style.display = 'none';
-        }
+        function leaveStream() {
+            const container = document.getElementById('discord-stream-container');
+            const video = document.getElementById('docked-stream-video');
+            if (video) {
+                video.srcObject = null;
+            }
+            if (container) container.style.display = 'none';
 
-        function stopScreenShare() {
             if (localScreenStream) {
                 localScreenStream.getTracks().forEach(t => t.stop());
                 localScreenStream = null;
@@ -2486,12 +2548,16 @@
                 try { activeScreenCall.close(); } catch(e) {}
                 activeScreenCall = null;
             }
-            closeStreamViewerModal();
+        }
+
+        function stopScreenShare() {
+            broadcast({ type: 'stream_ended', callerId: peer.id, callerName: username });
+            leaveStream();
             showNotification('Képernyőmegosztás leállítva.');
         }
 
         function toggleStreamFullscreen() {
-            const video = document.getElementById('screen-stream-video');
+            const video = document.getElementById('docked-stream-video');
             if (!video) return;
             if (document.fullscreenElement) {
                 document.exitFullscreen();
