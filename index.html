@@ -196,7 +196,7 @@
 
         .main-content {
             display: grid;
-            grid-template-columns: 260px 1fr;
+            grid-template-columns: 350px 1fr;
             gap: 20px;
         }
 
@@ -348,15 +348,18 @@
             padding: 1.5rem;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
         .sidebar h3 {
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             color: var(--primary-color);
         }
 
         .create-topic {
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
         }
 
         .create-topic input {
@@ -372,6 +375,12 @@
 
         .topic-list {
             list-style: none;
+            max-height: 280px;
+            overflow-y: auto;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            padding: 4px;
+            background: var(--input-bg);
         }
 
         .topic-item {
@@ -2121,14 +2130,8 @@
             container.innerHTML = '';
 
             const userEntries = Object.entries(knownUsers);
-            if (userEntries.length === 0) {
-                container.innerHTML = '<div class="empty-state" style="padding: 1rem;">Nincs felhasználó</div>';
-                return;
-            }
-
             const now = Date.now();
             const onlinePeers = [];
-            const offlinePeers = [];
 
             userEntries.forEach(([peerId, userInfo]) => {
                 const isOwn = peer ? (peerId === peer.id) : false;
@@ -2138,65 +2141,31 @@
 
                 if (isOnline) {
                     onlinePeers.push({ peerId, userInfo, isOwn, isConnected });
-                } else {
-                    offlinePeers.push({ peerId, userInfo, isOwn, isConnected: false });
                 }
             });
 
-            // 1. Online Section
-            const onlineTitle = document.createElement('div');
-            onlineTitle.style.cssText = 'font-size: 11px; font-weight: bold; text-transform: uppercase; color: #10b981; margin: 6px 0 4px 2px;';
-            onlineTitle.textContent = `🟢 Online (${onlinePeers.length})`;
-            container.appendChild(onlineTitle);
-
             if (onlinePeers.length === 0) {
-                const emptyOnline = document.createElement('div');
-                emptyOnline.className = 'empty-state';
-                emptyOnline.style.padding = '0.5rem';
-                emptyOnline.textContent = 'Nincs online partner';
-                container.appendChild(emptyOnline);
-            } else {
-                onlinePeers.forEach(({ peerId, userInfo, isOwn, isConnected }) => {
-                    const div = document.createElement('div');
-                    div.className = 'user-item';
-                    div.innerHTML = `
-                        <div class="user-name"><strong>@${escapeHtml(userInfo.username)}</strong> <span style="font-size: 11px; opacity: 0.6;">(${escapeHtml(peerId)})</span></div>
-                        <span class="user-status online">Online</span>
-                        <div style="display: flex; gap: 4px;">
-                            ${!isOwn && isConnected ? `<button class="btn btn-primary" onclick="startVoiceCall('${peerId}')" style="padding: 3px 8px; font-size: 11px;" title="Hanghívás indítása">🎙️ Hívás</button>` : ''}
-                            <button class="connect-btn ${isOwn ? 'own' : isConnected ? 'connected' : ''}" 
-                                    onclick="connectToPeerById('${peerId}')"
-                                    ${isOwn || isConnected ? 'disabled' : ''}>
-                                ${isOwn ? 'Te' : 'Kapcsolódva'}
-                            </button>
-                        </div>
-                    `;
-                    container.appendChild(div);
-                });
+                container.innerHTML = '<div class="empty-state" style="padding: 0.8rem; font-size: 13px;">Nincs online felhasználó</div>';
+                return;
             }
 
-            // 2. Offline Section
-            if (offlinePeers.length > 0) {
-                const offlineTitle = document.createElement('div');
-                offlineTitle.style.cssText = 'font-size: 11px; font-weight: bold; text-transform: uppercase; color: #94a3b8; margin: 12px 0 4px 2px;';
-                offlineTitle.textContent = `⚪ Offline (${offlinePeers.length})`;
-                container.appendChild(offlineTitle);
-
-                offlinePeers.forEach(({ peerId, userInfo }) => {
-                    const div = document.createElement('div');
-                    div.className = 'user-item';
-                    div.style.opacity = '0.7';
-                    div.innerHTML = `
-                        <div class="user-name">@${escapeHtml(userInfo.username)} <span style="font-size: 11px; opacity: 0.6;">(${escapeHtml(peerId)})</span></div>
-                        <span class="user-status offline">Offline</span>
-                        <div style="display: flex; gap: 4px;">
-                            <button class="connect-btn" onclick="connectToPeerById('${peerId}')" style="padding: 3px 8px; font-size: 11px;">Csatlakozás</button>
-                            <button class="delete-user-btn" onclick="removeUser('${peerId}')" title="Felhasználó eltávolítása">🗑️</button>
-                        </div>
-                    `;
-                    container.appendChild(div);
-                });
-            }
+            onlinePeers.forEach(({ peerId, userInfo, isOwn, isConnected }) => {
+                const div = document.createElement('div');
+                div.className = 'user-item';
+                div.innerHTML = `
+                    <div class="user-name"><strong>@${escapeHtml(userInfo.username)}</strong> <span style="font-size: 11px; opacity: 0.6;">(${escapeHtml(peerId)})</span></div>
+                    <span class="user-status online">Online</span>
+                    <div style="display: flex; gap: 4px;">
+                        ${!isOwn && isConnected ? `<button class="btn btn-primary" onclick="startVoiceCall('${peerId}')" style="padding: 3px 8px; font-size: 11px;" title="Hanghívás indítása">🎙️ Hívás</button>` : ''}
+                        <button class="connect-btn ${isOwn ? 'own' : isConnected ? 'connected' : ''}" 
+                                onclick="connectToPeerById('${peerId}')"
+                                ${isOwn || isConnected ? 'disabled' : ''}>
+                            ${isOwn ? 'Te' : 'Kapcsolódva'}
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
         }
 
         // Voice Call Functions
