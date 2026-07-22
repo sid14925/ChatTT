@@ -1,5 +1,5 @@
 {
-  "version": "3.1",
-  "buildDate": "2026-07-22T22:15:00Z",
-  "changelog": "Restored base design from 9f8648a, enforced 0px sharp rectangular edges everywhere, 100% viewport screen layout, and Total Commander style draggable resizer splitter bar"
+  "version": "3.2",
+  "buildDate": "2026-07-22T22:18:00Z",
+  "changelog": "Fixed broken smile.png image path to emoticons/smile.png with inline fallback for emoji picker button"
 }

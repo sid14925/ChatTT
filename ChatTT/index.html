@@ -1219,7 +1219,7 @@
                 <div class="chat-input" style="position: relative;">
                     <input type="file" id="file-input" style="display: none;" onchange="handleFileSelect(event)">
                     <button class="btn" style="background: #edf2f7; color: #4a5568; padding: 8px 12px;" onclick="triggerFileSelect()" title="Kép / Fájl csatolása">📎</button>
-                    <button class="btn" style="background: #edf2f7; color: #4a5568; padding: 6px 10px;" onclick="toggleEmojiPicker(event)" title="MSN Emotikonok"><img src="smile.png" alt="😊" style="width: 19px; height: 19px; vertical-align: middle; display: inline-block;"></button>
+                    <button class="btn" style="background: #edf2f7; color: #4a5568; padding: 6px 10px;" onclick="toggleEmojiPicker(event)" title="MSN Emotikonok"><img src="emoticons/smile.png" alt="😊" onerror="this.outerHTML='😊';" style="width: 19px; height: 19px; vertical-align: middle; display: inline-block;"></button>
                     <button class="btn" style="background: #f59e0b; color: white; padding: 8px 12px; font-weight: bold;" onclick="sendNudge()" title="Rengés küldése (MSN Nudge)">⚡ Rengés</button>
                     <input type="text" id="message-input" placeholder="Írj üzenetet..." onkeypress="handleKeyPress(event)">
                     <button class="btn btn-primary" onclick="sendMessage()">Küldés</button>
@@ -1227,7 +1227,7 @@
                     <!-- Emoji Picker Popover -->
                     <div id="emoji-picker" class="emoji-picker-popover" style="display: none;">
                         <div class="emoji-picker-header">
-                            <span><img src="smile.png" alt="😊" style="width: 17px; height: 17px; vertical-align: middle; margin-right: 4px;"> MSN Emotikonok</span>
+                            <span><img src="emoticons/smile.png" alt="😊" onerror="this.outerHTML='😊';" style="width: 17px; height: 17px; vertical-align: middle; margin-right: 4px;"> MSN Emotikonok</span>
                             <button onclick="toggleEmojiPicker(event)" style="background: transparent; border: none; font-size: 14px; cursor: pointer; color: inherit;">✖</button>
                         </div>
                         <div class="emoji-grid" id="emoji-grid"></div>
@@ -2304,7 +2304,7 @@
             // Peer count is now shown in user list
         }
 
-        const CURRENT_APP_VERSION = "3.1";
+        const CURRENT_APP_VERSION = "3.2";
         let detectedNewVersion = null;
 
         function checkAppVersion() {
