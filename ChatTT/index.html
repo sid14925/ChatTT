@@ -2201,7 +2201,7 @@
             // Peer count is now shown in user list
         }
 
-        const CURRENT_APP_VERSION = "2.7";
+        const CURRENT_APP_VERSION = "2.8";
         let detectedNewVersion = null;
 
         function checkAppVersion() {
@@ -2529,6 +2529,29 @@
                     activeScreenCall = screenCall;
 
                     broadcast({ type: 'stream_started', callerId: peer.id, callerName: username });
+
+                    // Post automated stream announcement message to current active chat topic
+                    if (currentTopic) {
+                        const streamMsg = {
+                            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                            content: `🖥️ Élő adást / képernyőmegosztást indítottam!`,
+                            username: username,
+                            timestamp: new Date().toISOString(),
+                            isStreamAnnouncement: true,
+                            streamCallerId: peer.id
+                        };
+                        if (!data.messages[currentTopic]) {
+                            data.messages[currentTopic] = [];
+                        }
+                        data.messages[currentTopic].push(streamMsg);
+                        saveData();
+                        renderMessages();
+                        broadcast({
+                            type: 'new_message',
+                            topicId: currentTopic,
+                            message: streamMsg
+                        });
+                    }
 
                     stream.getVideoTracks()[0].onended = () => {
                         stopScreenShare();
@@ -3163,6 +3186,22 @@
                 
                 div.className = 'message' + (msg.username === username ? ' own' : '') + (msg.pinned ? ' is-pinned' : '');
 
+                let streamCardHtml = '';
+                if (msg.isStreamAnnouncement) {
+                    streamCardHtml = `
+                        <div style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 10px 14px; border-radius: 8px; margin-top: 8px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(99,102,241,0.3);">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 20px;">🖥️</span>
+                                <div>
+                                    <strong style="font-size: 13.5px;">@${escapeHtml(msg.username)} élő adást / képernyőmegosztást indított!</strong>
+                                    <div style="font-size: 11px; opacity: 0.9;">Kattints a gombra a stream élő nézéséhez</div>
+                                </div>
+                            </div>
+                            <button onclick="watchUserStream('${msg.streamCallerId || ''}')" class="btn" style="background: #22c55e; color: white; font-weight: bold; padding: 6px 14px; font-size: 12px; cursor: pointer; border: none; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">▶️ Csatlakozás a Streamhez</button>
+                        </div>
+                    `;
+                }
+
                 div.innerHTML = `
                     <div>
                         <span class="username">${escapeHtml(msg.username)}</span>
@@ -3172,6 +3211,7 @@
                     </div>
                     ${replyQuoteHtml}
                     ${formattedContent ? `<div class="content">${formattedContent}</div>` : ''}
+                    ${streamCardHtml}
                     ${attachmentHtml}
                 `;
                 container.appendChild(div);

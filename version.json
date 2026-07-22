@@ -1,5 +1,5 @@
 {
-  "version": "2.7",
-  "buildDate": "2026-07-22T21:35:00Z",
-  "changelog": "Added P2P Stream Signaling, Live Stream Badges in User List, Direct Watch Buttons, and Floating PIP Mini-Player mode so video never obscures chat"
+  "version": "2.8",
+  "buildDate": "2026-07-22T21:37:00Z",
+  "changelog": "Added Automated In-Chat Stream Announcement Messages with interactive Join Stream button for all topic participants"
 }
