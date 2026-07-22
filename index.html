@@ -966,6 +966,23 @@
         </div>
     </div>
 
+    <!-- Discord-Style Live Stream Viewer Modal -->
+    <div id="stream-viewer-modal" class="modal" style="display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 25000;">
+        <div style="background: var(--card-bg); color: var(--text-color); padding: 20px; border-radius: 14px; max-width: 900px; width: 95%; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.6); border: 2px solid var(--primary-color); display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--input-border); padding-bottom: 10px;">
+                <h3 id="stream-modal-title" style="font-size: 16px; color: var(--primary-color); display: flex; align-items: center; gap: 8px;">🖥️ Discord-Style Képernyő Stream</h3>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn" onclick="toggleStreamFullscreen()" style="background: var(--input-bg); color: var(--text-color); border: 1px solid var(--input-border); padding: 4px 10px; font-size: 12px; cursor: pointer;">⛶ Teljes Képernyő</button>
+                    <button id="stop-stream-btn" class="btn btn-danger" onclick="stopScreenShare()" style="display: none; padding: 4px 10px; font-size: 12px; cursor: pointer;">🔴 Stream Leállítása</button>
+                    <button onclick="closeStreamViewerModal()" style="background: transparent; border: none; font-size: 20px; cursor: pointer; color: inherit;" title="Ablak bezárása">✖</button>
+                </div>
+            </div>
+            <div style="position: relative; background: #000; border-radius: 10px; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                <video id="screen-stream-video" autoplay playsinline style="width: 100%; max-height: 65vh; object-fit: contain;"></video>
+            </div>
+        </div>
+    </div>
+
     <!-- New Version Available Modal -->
     <div id="version-update-modal" class="modal" style="display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 20000;">
         <div style="background: var(--card-bg); color: var(--text-color); padding: 24px; border-radius: 14px; max-width: 420px; width: 90%; text-align: center; box-shadow: 0 12px 35px rgba(0,0,0,0.5); border: 2px solid var(--primary-color);">
@@ -1063,7 +1080,11 @@
                             <span id="active-call-timer" style="font-size: 12px; opacity: 0.9; margin-left: 8px; font-family: monospace;">00:00</span>
                         </div>
                     </div>
-                    <div style="display: flex; gap: 8px;">
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <select id="mic-input-select" onchange="changeMicrophoneDevice(this.value)" class="btn" style="background: rgba(255,255,255,0.25); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 4px 8px; font-size: 12px; cursor: pointer; max-width: 170px;" title="Válassz mikrofon bemeneti eszközt">
+                            <option value="" style="color: #000;">🎤 Alapértelmezett Mikrofon</option>
+                        </select>
+                        <button class="btn" onclick="startScreenShare()" style="background: rgba(255,255,255,0.25); color: white; padding: 5px 12px; font-size: 12px; cursor: pointer;" title="Discord-style élő képernyő és játék megosztás">🖥️ Stream</button>
                         <button id="mute-mic-btn" class="btn" onclick="toggleMuteMicrophone()" style="background: rgba(255,255,255,0.25); color: white; padding: 5px 12px; font-size: 12px; cursor: pointer;">🎤 Némítás</button>
                         <button class="btn" onclick="endVoiceCall()" style="background: #dc2626; color: white; padding: 5px 12px; font-size: 12px; font-weight: bold; cursor: pointer;">🔴 Hívás Befejezése</button>
                     </div>
@@ -1074,6 +1095,7 @@
                     <h3 id="current-topic-name">Válassz egy topikot</h3>
                     <div style="display: flex; gap: 8px;">
                         <button class="btn btn-primary" onclick="startVoiceCall()" style="font-size: 13px;" title="MSN Mikrofonos Hanghívás indítása az első csatlakozott partnerrel">🎙️ Hanghívás</button>
+                        <button class="btn btn-primary" onclick="startScreenShare()" style="font-size: 13px; background: #6366f1;" title="Discord-style élő képernyő megosztás / stream indítása">🖥️ Képernyő Stream</button>
                         <button id="export-txt-btn" class="btn btn-primary" onclick="exportTopicToTxt()" style="display: none; font-size: 13px;">📥 Mentés TXT-ként</button>
                         <button id="right-panel-toggle-btn" class="btn" onclick="openPinsMediaModal()" style="font-size: 13px; background: var(--input-bg); color: var(--text-color); border: 1px solid var(--input-border);" title="📌 Rögzített üzenetek & Média felugró ablak megnyitása">📌 Rögzítettek & Média</button>
                     </div>
@@ -1860,9 +1882,20 @@
             });
 
             peer.on('call', (incomingCall) => {
-                activeMediaCall = incomingCall;
-                playMsnSound('phone');
-                showIncomingCallModal(incomingCall);
+                const metadata = incomingCall.metadata || {};
+                if (metadata.type === 'screen-share') {
+                    incomingCall.answer();
+                    incomingCall.on('stream', (remoteStream) => {
+                        const callerId = incomingCall.peer;
+                        const callerName = knownUsers[callerId] ? knownUsers[callerId].username : callerId;
+                        showStreamViewerModal(remoteStream, `🖥️ @${callerName} Élő Stream / Képernyője`, false);
+                        showNotification(`🖥️ @${callerName} képernyőmegosztást indított!`);
+                    });
+                } else {
+                    activeMediaCall = incomingCall;
+                    playMsnSound('phone');
+                    showIncomingCallModal(incomingCall);
+                }
             });
 
             peer.on('error', (err) => {
@@ -2316,11 +2349,154 @@
             });
         }
 
+        let selectedMicDeviceId = '';
+        let localScreenStream = null;
+        let activeScreenCall = null;
+
+        function updateMicrophoneList() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+            navigator.mediaDevices.enumerateDevices()
+                .then(devices => {
+                    const micSelects = [
+                        document.getElementById('mic-input-select'),
+                        document.getElementById('sidebar-mic-select')
+                    ];
+                    
+                    const audioInputs = devices.filter(d => d.kind === 'audioinput');
+                    micSelects.forEach(select => {
+                        if (!select) return;
+                        select.innerHTML = '<option value="" style="color:#000;">🎤 Alapértelmezett Mikrofon</option>';
+                        audioInputs.forEach((device, idx) => {
+                            const option = document.createElement('option');
+                            option.value = device.deviceId;
+                            option.textContent = device.label || `Mikrofon ${idx + 1}`;
+                            option.style.color = '#000';
+                            if (device.deviceId === selectedMicDeviceId) option.selected = true;
+                            select.appendChild(option);
+                        });
+                    });
+                })
+                .catch(err => console.warn('Could not enumerate audio devices:', err));
+        }
+
+        function changeMicrophoneDevice(deviceId) {
+            selectedMicDeviceId = deviceId;
+            showNotification('Mikrofon bemeneti eszköz módosítva.');
+            if (localAudioStream && activeMediaCall) {
+                const audioConstraints = deviceId ? { deviceId: { exact: deviceId } } : true;
+                navigator.mediaDevices.getUserMedia({ audio: audioConstraints, video: false })
+                    .then(newStream => {
+                        const newAudioTrack = newStream.getAudioTracks()[0];
+                        if (activeMediaCall.peerConnection) {
+                            const senders = activeMediaCall.peerConnection.getSenders();
+                            const audioSender = senders.find(s => s.track && s.track.kind === 'audio');
+                            if (audioSender) {
+                                audioSender.replaceTrack(newAudioTrack);
+                            }
+                        }
+                        localAudioStream.getAudioTracks().forEach(t => t.stop());
+                        localAudioStream = newStream;
+                    })
+                    .catch(err => showNotification('Nem sikerült átváltani a kiválasztott mikrofonra.', 'error'));
+            }
+        }
+
+        // Discord-Style Screen Share / Video Streaming
+        function startScreenShare(targetPeerId) {
+            if (!targetPeerId) {
+                if (!connections || connections.length === 0) {
+                    showNotification('Nincs csatlakozott online partner a streameléshez!', 'error');
+                    return;
+                }
+                targetPeerId = connections[0].peer;
+            }
+
+            const peerInfo = knownUsers[targetPeerId];
+            const peerName = peerInfo ? peerInfo.username : targetPeerId;
+
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+                showNotification('A böngésződ nem támogatja a képernyőmegosztást (getDisplayMedia)!', 'error');
+                return;
+            }
+
+            showNotification('🖥️ Képernyőmegosztás / Stream választása...');
+
+            navigator.mediaDevices.getDisplayMedia({ video: { cursor: "always" }, audio: true })
+                .then(stream => {
+                    localScreenStream = stream;
+                    
+                    showStreamViewerModal(stream, `🖥️ Saját Stream - Élő adás @${peerName} felé`, true);
+
+                    const screenCall = peer.call(targetPeerId, stream, { metadata: { type: 'screen-share' } });
+                    activeScreenCall = screenCall;
+
+                    stream.getVideoTracks()[0].onended = () => {
+                        stopScreenShare();
+                    };
+
+                    screenCall.on('close', () => {
+                        stopScreenShare();
+                    });
+                })
+                .catch(err => {
+                    if (err.name !== 'NotAllowedError') {
+                        console.error('Screen share error:', err);
+                        showNotification('Nem sikerült elindítani a képernyőmegosztást.', 'error');
+                    }
+                });
+        }
+
+        function showStreamViewerModal(stream, titleText, isOwn = false) {
+            const modal = document.getElementById('stream-viewer-modal');
+            const video = document.getElementById('screen-stream-video');
+            const title = document.getElementById('stream-modal-title');
+            const stopBtn = document.getElementById('stop-stream-btn');
+
+            if (title) title.textContent = titleText;
+            if (stopBtn) stopBtn.style.display = isOwn ? 'inline-block' : 'none';
+
+            if (video) {
+                video.srcObject = stream;
+                video.play().catch(e => console.warn('Stream play error:', e));
+            }
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeStreamViewerModal() {
+            const modal = document.getElementById('stream-viewer-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function stopScreenShare() {
+            if (localScreenStream) {
+                localScreenStream.getTracks().forEach(t => t.stop());
+                localScreenStream = null;
+            }
+            if (activeScreenCall) {
+                try { activeScreenCall.close(); } catch(e) {}
+                activeScreenCall = null;
+            }
+            closeStreamViewerModal();
+            showNotification('Képernyőmegosztás leállítva.');
+        }
+
+        function toggleStreamFullscreen() {
+            const video = document.getElementById('screen-stream-video');
+            if (!video) return;
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                video.requestFullscreen().catch(e => console.warn('Fullscreen error:', e));
+            }
+        }
+
         function showActiveCallBar(remoteUsername) {
             const bar = document.getElementById('active-call-bar');
             const userEl = document.getElementById('active-call-user');
             if (userEl) userEl.textContent = `🎙️ Hanghívás: @${remoteUsername}`;
             if (bar) bar.style.display = 'flex';
+
+            updateMicrophoneList();
 
             callStartTime = Date.now();
             if (callTimerInterval) clearInterval(callTimerInterval);
