@@ -934,59 +934,65 @@
         let replyToMessage = null;
 
         // MSN Audio & Emoji State
-        let audioCtx = null;
         let soundEnabled = true;
 
         const msnEmojis = [
-            { code: ':-)', alt: ':)', symbol: '🙂', title: 'Smile (Mosoly)' },
-            { code: ';-)', alt: ';)', symbol: '😉', title: 'Wink (Kacsintás)' },
-            { code: ':-D', alt: ':D', symbol: '😃', title: 'Laugh (Nevetés)' },
-            { code: ':-P', alt: ':P', symbol: '😛', title: 'Tongue (Nyelvnyújtás)' },
-            { code: ':-p', alt: ':p', symbol: '😛', title: 'Tongue' },
-            { code: ':-O', alt: ':O', symbol: '😮', title: 'Surprised (Meglepett)' },
-            { code: ':-o', alt: ':o', symbol: '😮', title: 'Surprised' },
-            { code: ':-|', alt: ':|', symbol: '😐', title: 'Disappointed (Csalódott)' },
-            { code: ':\'(', symbol: '😢', title: 'Crying (Sírás)' },
-            { code: ':-@', alt: ':@', symbol: '😡', title: 'Angry (Mérges)' },
-            { code: ':-$', alt: ':$', symbol: '😳', title: 'Embarrassed (Pironkodó)' },
-            { code: '8-)', alt: '8)', symbol: '😎', title: 'Cool (Menő)' },
-            { code: '(A)', alt: '(a)', symbol: '😇', title: 'Angel (Angyal)' },
-            { code: '(6)', alt: '(H)', symbol: '😈', title: 'Devil (Ördög)' },
-            { code: '(h)', symbol: '😈', title: 'Devil' },
-            { code: '(L)', alt: '(l)', symbol: '❤️', title: 'Heart (Szív)' },
-            { code: '(U)', alt: '(u)', symbol: '💔', title: 'Broken Heart (Törött szív)' },
-            { code: '(K)', alt: '(k)', symbol: '💋', title: 'Kiss (Csók)' },
-            { code: '(F)', alt: '(f)', symbol: '🌹', title: 'Rose (Rózsa)' },
-            { code: '(W)', alt: '(w)', symbol: '🥀', title: 'Wilted Rose (Harmatos rózsa)' },
-            { code: '(*)', symbol: '⭐', title: 'Star (Csillag)' },
-            { code: '(8)', symbol: '🎵', title: 'Music (Zene)' },
-            { code: '(T)', alt: '(t)', symbol: '📞', title: 'Phone (Telefon)' },
-            { code: '(I)', alt: '(i)', symbol: '💡', title: 'Idea (Ötlet)' },
-            { code: '(C)', alt: '(c)', symbol: '☕', title: 'Coffee (Kávé)' },
-            { code: '(B)', alt: '(b)', symbol: '🍺', title: 'Beer (Sör)' },
-            { code: '(D)', alt: '(d)', symbol: '🍸', title: 'Drink (Ital)' },
-            { code: '(^)', symbol: '🎂', title: 'Cake (Torta)' },
-            { code: '(#)', symbol: '🌞', title: 'Sun (Nap)' },
-            { code: '(S)', alt: '(s)', symbol: '🌙', title: 'Moon (Hold)' },
-            { code: '(G)', alt: '(g)', symbol: '🎁', title: 'Gift (Ajándék)' },
-            { code: '(dog)', symbol: '🐶', title: 'Dog (Kutya)' },
-            { code: '(cat)', symbol: '🐱', title: 'Cat (Macska)' },
-            { code: '(car)', symbol: '🚗', title: 'Car (Autó)' },
-            { code: '(plane)', symbol: '✈️', title: 'Plane (Repülő)' },
-            { code: '(clock)', symbol: '⌛', title: 'Clock (Óra)' },
-            { code: '(P)', alt: '(p)', symbol: '📷', title: 'Camera (Kamera)' },
-            { code: '(pi)', symbol: '🍕', title: 'Pizza' },
-            { code: '(so)', symbol: '⚽', title: 'Soccer (Foci)' },
-            { code: '(R)', alt: '(r)', symbol: '☔', title: 'Umbrella (Esernyő)' },
-            { code: '(nudge)', symbol: '⚡', title: 'Rengés (Nudge)' }
+            { code: ':-)', alt: ':)', file: 'smile.png', title: 'Smile (Mosoly)' },
+            { code: ';-)', alt: ';)', file: 'wink.gif', title: 'Wink (Kacsintás)' },
+            { code: ':-D', alt: ':D', file: 'laugh.png', title: 'Laugh (Nevetés)' },
+            { code: ':-P', alt: ':P', file: 'tongue.png', title: 'Tongue (Nyelvnyújtás)' },
+            { code: ':-p', alt: ':p', file: 'tongue.png', title: 'Tongue' },
+            { code: ':-O', alt: ':O', file: 'ooh.png', title: 'Surprised (Meglepett)' },
+            { code: ':-o', alt: ':o', file: 'ooh.png', title: 'Surprised' },
+            { code: ':-|', alt: ':|', file: 'erm.png', title: 'Disappointed (Csalódott)' },
+            { code: ':\'(', file: 'cry.gif', title: 'Crying (Sírás)' },
+            { code: ':-@', alt: ':@', file: 'angry.png', title: 'Angry (Mérges)' },
+            { code: ':-$', alt: ':$', file: 'blush.png', title: 'Embarrassed (Pironkodó)' },
+            { code: '8-)', alt: '8)', file: 'cool.png', title: 'Cool (Menő)' },
+            { code: '(A)', alt: '(a)', file: 'angel.png', title: 'Angel (Angyal)' },
+            { code: '(6)', alt: '(H)', file: 'devil.png', title: 'Devil (Ördög)' },
+            { code: '(h)', file: 'devil.png', title: 'Devil' },
+            { code: '(L)', alt: '(l)', file: 'heart.png', title: 'Heart (Szív)' },
+            { code: '<3', file: 'heart.png', title: 'Heart' },
+            { code: '(U)', alt: '(u)', file: 'broken.png', title: 'Broken Heart (Törött szív)' },
+            { code: '(K)', alt: '(k)', file: 'kiss.png', title: 'Kiss (Csók)' },
+            { code: '(F)', alt: '(f)', file: 'rose.png', title: 'Rose (Rózsa)' },
+            { code: '(W)', alt: '(w)', file: 'wilted.png', title: 'Wilted Rose (Harmatos rózsa)' },
+            { code: '(*)', file: 'star.png', title: 'Star (Csillag)' },
+            { code: '(8)', file: 'note.png', title: 'Music (Zene)' },
+            { code: '(T)', alt: '(t)', file: 'telephone.png', title: 'Phone (Telefon)' },
+            { code: '(I)', alt: '(i)', file: 'lightbulb.png', title: 'Idea (Ötlet)' },
+            { code: '(C)', alt: '(c)', file: 'coffee.png', title: 'Coffee (Kávé)' },
+            { code: '(B)', alt: '(b)', file: 'beer.png', title: 'Beer (Sör)' },
+            { code: '(D)', alt: '(d)', file: 'cocktail.png', title: 'Drink (Ital)' },
+            { code: '(^)', file: 'cake.gif', title: 'Cake (Torta)' },
+            { code: '(#)', file: 'sun.png', title: 'Sun (Nap)' },
+            { code: '(S)', alt: '(s)', file: 'moon.png', title: 'Moon (Hold)' },
+            { code: '(G)', alt: '(g)', file: 'gift.png', title: 'Gift (Ajándék)' },
+            { code: '(dog)', file: 'dog.png', title: 'Dog (Kutya)' },
+            { code: '(cat)', file: 'cat.png', title: 'Cat (Macska)' },
+            { code: '(car)', alt: '(au)', file: 'car.gif', title: 'Car (Autó)' },
+            { code: '(plane)', alt: '(ap)', file: 'plane.gif', title: 'Plane (Repülő)' },
+            { code: '(clock)', file: 'clock.png', title: 'Clock (Óra)' },
+            { code: '(P)', alt: '(p)', file: 'camera.png', title: 'Camera (Kamera)' },
+            { code: '(pi)', file: 'pizza.gif', title: 'Pizza' },
+            { code: '(so)', file: 'chops.gif', title: 'Soccer (Foci)' },
+            { code: '(R)', alt: '(r)', file: 'umbrella.gif', title: 'Umbrella (Esernyő)' },
+            { code: '(Z)', file: 'guy.png', title: 'Boy (Fiú)' },
+            { code: '(X)', file: 'girl.png', title: 'Girl (Lány)' },
+            { code: '(Y)', alt: '(y)', file: 'thup.png', title: 'Thumbs up (Tetszik)' },
+            { code: '(N)', alt: '(n)', file: 'thdown.png', title: 'Thumbs down (Nem tetszik)' },
+            { code: '(brb)', file: 'brb.gif', title: 'Be Right Back' },
+            { code: '(h5)', file: 'hi5.gif', title: 'High Five' },
+            { code: '(st)', file: 'storm.gif', title: 'Storm Cloud' },
+            { code: '(li)', file: 'lightning.gif', title: 'Lightning' },
+            { code: '(mo)', file: 'coins.gif', title: 'Money' },
+            { code: '(co)', file: 'computer.gif', title: 'Computer' },
+            { code: '(mp)', file: 'mobile.gif', title: 'Mobile Phone' },
+            { code: '(sn)', file: 'snail.gif', title: 'Snail' },
+            { code: '(tu)', file: 'turtle.gif', title: 'Turtle' },
+            { code: '(bah)', file: 'sheep.gif', title: 'Black Sheep' }
         ];
-
-        // MSN Audio Synthesizer (Web Audio API)
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
 
         function toggleSound() {
             soundEnabled = !soundEnabled;
@@ -998,98 +1004,18 @@
         function playMsnSound(type) {
             if (!soundEnabled) return;
             try {
-                initAudio();
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-                const now = audioCtx.currentTime;
-                
-                if (type === 'message') {
-                    // MSN Incoming message chime (F#5 to C#6)
-                    const osc1 = audioCtx.createOscillator();
-                    const osc2 = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    
-                    osc1.type = 'sine';
-                    osc2.type = 'triangle';
-                    
-                    osc1.frequency.setValueAtTime(740, now);
-                    osc1.frequency.setValueAtTime(1108.73, now + 0.12);
-                    
-                    osc2.frequency.setValueAtTime(1480, now);
-                    osc2.frequency.setValueAtTime(2217, now + 0.12);
-                    
-                    gain.gain.setValueAtTime(0, now);
-                    gain.gain.linearRampToValueAtTime(0.25, now + 0.02);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-                    
-                    osc1.connect(gain);
-                    osc2.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    
-                    osc1.start(now);
-                    osc2.start(now);
-                    osc1.stop(now + 0.5);
-                    osc2.stop(now + 0.5);
-                } else if (type === 'online') {
-                    // MSN Partner Online chime (E5, G#5, B5)
-                    const notes = [659.25, 830.61, 987.77];
-                    notes.forEach((freq, idx) => {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        const t = now + idx * 0.1;
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(freq, t);
-                        gain.gain.setValueAtTime(0, t);
-                        gain.gain.linearRampToValueAtTime(0.2, t + 0.02);
-                        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.start(t);
-                        osc.stop(t + 0.35);
-                    });
-                } else if (type === 'nudge') {
-                    // MSN Nudge: Dramatic low bass thud + rattling burst
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(160, now);
-                    osc.frequency.exponentialRampToValueAtTime(35, now + 0.45);
-                    
-                    gain.gain.setValueAtTime(0.6, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-                    
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.5);
-                    
-                    const noiseOsc = audioCtx.createOscillator();
-                    const noiseGain = audioCtx.createGain();
-                    noiseOsc.type = 'square';
-                    noiseOsc.frequency.setValueAtTime(80, now + 0.05);
-                    noiseOsc.frequency.setValueAtTime(50, now + 0.2);
-                    noiseGain.gain.setValueAtTime(0.3, now + 0.05);
-                    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-                    noiseOsc.connect(noiseGain);
-                    noiseGain.connect(audioCtx.destination);
-                    noiseOsc.start(now + 0.05);
-                    noiseOsc.stop(now + 0.35);
-                } else if (type === 'send') {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(880, now);
-                    osc.frequency.exponentialRampToValueAtTime(440, now + 0.05);
-                    gain.gain.setValueAtTime(0.12, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.06);
-                }
+                let fileName = 'type.mp3';
+                if (type === 'message') fileName = 'type.mp3';
+                else if (type === 'online') fileName = 'online.mp3';
+                else if (type === 'nudge') fileName = 'nudge.mp3';
+                else if (type === 'send') fileName = 'outgoing.mp3';
+                else if (type === 'email') fileName = 'newemail.mp3';
+                else if (type === 'alert') fileName = 'newalert.mp3';
+
+                const audio = new Audio('sounds/' + fileName);
+                audio.play().catch(e => console.warn('Audio play error:', e));
             } catch(e) {
-                console.warn('Audio play error:', e);
+                console.warn('Sound play error:', e);
             }
         }
 
@@ -1153,14 +1079,14 @@
             if (!grid || grid.children.length > 0) return;
             grid.innerHTML = '';
             
-            const addedSymbols = new Set();
+            const addedCodes = new Set();
             msnEmojis.forEach(item => {
-                if (addedSymbols.has(item.symbol)) return;
-                addedSymbols.add(item.symbol);
+                if (addedCodes.has(item.code)) return;
+                addedCodes.add(item.code);
                 
                 const div = document.createElement('div');
                 div.className = 'emoji-item';
-                div.textContent = item.symbol;
+                div.innerHTML = `<img src="emoticons/${item.file}" style="width: 19px; height: 19px; object-fit: contain;">`;
                 div.title = `${item.title} (${item.code})`;
                 div.onclick = (event) => {
                     event.stopPropagation();
@@ -1191,7 +1117,7 @@
                     pattern += '|' + escapeRegex(item.alt);
                 }
                 const regex = new RegExp(pattern, 'g');
-                result = result.replace(regex, `<span class="msn-emoji" title="${item.code}">${item.symbol}</span>`);
+                result = result.replace(regex, `<img src="emoticons/${item.file}" class="msn-emoji-img" title="${item.code}" alt="${item.code}" style="vertical-align: middle; height: 19px; margin: 0 2px;">`);
             });
             return result;
         }
