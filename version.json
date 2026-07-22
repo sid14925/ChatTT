@@ -1,5 +1,5 @@
 {
-  "version": "2.9",
-  "buildDate": "2026-07-22T21:40:00Z",
-  "changelog": "Instant stream player popup on click, browser autoplay fallback handling, and robust multi-peer stream call connection fixes"
+  "version": "3.1",
+  "buildDate": "2026-07-22T22:15:00Z",
+  "changelog": "Restored base design from 9f8648a, enforced 0px sharp rectangular edges everywhere, 100% viewport screen layout, and Total Commander style draggable resizer splitter bar"
 }
