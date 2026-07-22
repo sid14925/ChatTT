@@ -306,23 +306,6 @@
             height: 600px;
         }
 
-        @keyframes msn-nudge-shake {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            10% { transform: translate(-14px, -10px) rotate(-3deg); }
-            20% { transform: translate(14px, 10px) rotate(3deg); }
-            30% { transform: translate(-12px, 8px) rotate(-2deg); }
-            40% { transform: translate(12px, -8px) rotate(2deg); }
-            50% { transform: translate(-9px, 5px) rotate(-1deg); }
-            60% { transform: translate(9px, -5px) rotate(1deg); }
-            70% { transform: translate(-6px, 3px) rotate(0deg); }
-            80% { transform: translate(6px, -3px) rotate(0deg); }
-            90% { transform: translate(-3px, 1px) rotate(0deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-        }
-        .nudge-shaking {
-            animation: msn-nudge-shake 0.6s ease-in-out !important;
-        }
-
         .chat-header {
             padding-bottom: 1rem;
             border-bottom: 2px solid var(--input-border);
@@ -346,11 +329,11 @@
         }
 
         .message {
-            padding: 10px 14px;
+            padding: 10px 15px;
             margin-bottom: 10px;
             border-radius: 8px;
-            background: var(--other-msg-bg, var(--card-bg));
-            color: var(--other-msg-text, var(--text-color));
+            background: var(--card-bg);
+            color: var(--text-color);
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
@@ -372,17 +355,16 @@
         }
 
         .message.own {
-            background: var(--own-msg-bg, var(--primary-color));
-            color: var(--own-msg-text, #ffffff);
+            background: var(--primary-color);
+            color: white;
         }
 
         .message.own .username {
-            color: var(--own-msg-text, #ffffff);
+            color: white;
         }
 
         .message.own .timestamp {
-            color: var(--own-msg-text, #ffffff);
-            opacity: 0.75;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .file-preview {
@@ -673,6 +655,107 @@
                 opacity: 1;
             }
         }
+
+        @keyframes msn-nudge-shake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-8px, -5px) rotate(-1deg); }
+            20% { transform: translate(8px, 5px) rotate(1deg); }
+            30% { transform: translate(-8px, 5px) rotate(0deg); }
+            40% { transform: translate(8px, -5px) rotate(1deg); }
+            50% { transform: translate(-5px, -5px) rotate(-1deg); }
+            60% { transform: translate(5px, 5px) rotate(0deg); }
+            70% { transform: translate(-5px, 2px) rotate(0deg); }
+            80% { transform: translate(5px, -2px) rotate(0deg); }
+            90% { transform: translate(-2px, 0px) rotate(0deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .nudge-anim {
+            animation: msn-nudge-shake 0.6s ease-in-out;
+        }
+
+        .emoji-picker-popover {
+            position: absolute;
+            bottom: 60px;
+            left: 50px;
+            width: 320px;
+            max-height: 260px;
+            background: var(--card-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            animation: popIn 0.2s ease;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .emoji-picker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--input-border);
+            color: var(--primary-color);
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            overflow-y: auto;
+            max-height: 200px;
+            padding-right: 4px;
+        }
+
+        .emoji-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            padding: 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.1s;
+            user-select: none;
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        .emoji-item:hover {
+            transform: scale(1.25);
+            background: rgba(102, 126, 234, 0.15);
+        }
+
+        .nudge-message-box {
+            background: #fef3c7 !important;
+            color: #92400e !important;
+            border: 2px dashed #f59e0b !important;
+            font-weight: bold;
+            text-align: center;
+            animation: pulseNudge 0.5s ease;
+        }
+
+        @keyframes pulseNudge {
+            0% { transform: scale(0.95); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .msn-emoji {
+            font-size: 1.15em;
+            vertical-align: middle;
+            display: inline-block;
+            margin: 0 2px;
+        }
     </style>
 </head>
 <body>
@@ -741,28 +824,22 @@
     <div id="app">
         <header>
             <h1 style="display: flex; align-items: center; gap: 8px;">
-                <span id="app-title-display">🌐 P2P Reddit</span>
+                <span id="app-title-display">💬 MSN Messenger P2P</span>
                 <button class="btn" style="background: transparent; padding: 2px 6px; font-size: 14px; opacity: 0.6; color: inherit;" onclick="editAppTitle()" title="Alkalmazás címének módosítása">✏️</button>
             </h1>
             <div class="header-controls">
                 <div style="display: flex; align-items: center; gap: 6px;">
+                    <button id="sound-toggle-btn" class="btn" onclick="toggleSound()" style="padding: 6px 10px; background: var(--input-bg); color: var(--text-color); border: 1px solid var(--input-border); cursor: pointer;" title="MSN Értesítési Hangok Be/Ki">🔔 Hang: BE</button>
                     <select id="theme-select" onchange="changeTheme(this.value)" class="btn" style="background: var(--input-bg); color: var(--text-color); border: 1px solid var(--input-border); cursor: pointer;" title="Színtéma kiválasztása">
                         <option value="default">💜 Ibolya</option>
-                        <option value="blue">💙 Kék</option>
+                        <option value="blue">💙 Kék (Classic MSN)</option>
                         <option value="emerald">💚 Smaragd Zöld</option>
-                        <option value="orange">🧡 Narancs (Reddit)</option>
+                        <option value="orange">🧡 Narancs</option>
                         <option value="dark">🖤 Sötét Mód</option>
                         <option value="custom">🎨 Egyedi RGB Szín</option>
                     </select>
                     <input type="color" id="custom-color-picker" oninput="setCustomColor(this.value)" onchange="setCustomColor(this.value)" value="#667eea" title="Konkrét RGB / Hex szín kiválasztása" style="width: 32px; height: 32px; padding: 1px; border-radius: 6px; border: 1px solid var(--input-border); cursor: pointer; background: transparent;">
                     <button class="btn" onclick="openThemeModal()" style="padding: 6px 10px; background: var(--input-bg); color: var(--text-color); border: 1px solid var(--input-border); cursor: pointer;" title="Minden szín részletes testreszabása">⚙️ Színek</button>
-                    <select id="sound-type-select" onchange="changeSoundType(this.value)" class="btn" style="padding: 6px 8px; background: var(--input-bg); color: var(--text-color); border: 1px solid var(--input-border); cursor: pointer;" title="Üzenethang hangszínének kiválasztása">
-                        <option value="msn">🎵 MSN Csengés</option>
-                        <option value="buzz">🫨 MSN Rezgés</option>
-                        <option value="pop">🎈 Retro Pop</option>
-                        <option value="bell">🎺 Csengettyű</option>
-                    </select>
-                    <button id="sound-toggle-btn" class="btn" onclick="toggleSound()" style="padding: 6px 10px; background: var(--input-bg); color: var(--text-color); border: 1px solid var(--input-border); cursor: pointer;" title="Üzenethangok be/kikapcsolása">🔊 Hang</button>
                 </div>
                 <span class="user-info" id="current-user"></span>
                 <span class="connection-status disconnected" id="connection-status">Kapcsolatlan</span>
@@ -821,19 +898,19 @@
                 </div>
                 <div class="chat-input" style="position: relative;">
                     <input type="file" id="file-input" style="display: none;" onchange="handleFileSelect(event)">
-                    <button class="btn" style="background: #edf2f7; color: #4a5568; padding: 8px 14px;" onclick="triggerFileSelect()" title="Kép / Fájl csatolása">📎</button>
-                    <button class="btn" style="background: #edf2f7; color: #4a5568; padding: 8px 14px;" onclick="toggleEmojiPicker()" title="Emoji beszúrása">😀</button>
-                    <button class="btn" style="background: #feebc8; color: #744210; padding: 8px 12px; font-weight: bold; white-space: nowrap;" onclick="sendNudge()" title="Klasszikus MSN Rezgetés küldése a topik tagjainak!">🫨 Rezgés</button>
+                    <button class="btn" style="background: #edf2f7; color: #4a5568; padding: 8px 12px;" onclick="triggerFileSelect()" title="Kép / Fájl csatolása">📎</button>
+                    <button class="btn" style="background: #edf2f7; color: #4a5568; padding: 8px 12px; font-size: 16px;" onclick="toggleEmojiPicker(event)" title="MSN Emotikonok">😊</button>
+                    <button class="btn" style="background: #f59e0b; color: white; padding: 8px 12px; font-weight: bold;" onclick="sendNudge()" title="Rengés küldése (MSN Nudge)">⚡ Rengés</button>
                     <input type="text" id="message-input" placeholder="Írj üzenetet..." onkeypress="handleKeyPress(event)">
                     <button class="btn btn-primary" onclick="sendMessage()">Küldés</button>
 
-                    <div id="emoji-picker-popup" style="display: none; position: absolute; bottom: 55px; left: 45px; background: var(--card-bg); border: 1px solid var(--input-border); border-radius: 12px; padding: 10px; width: 310px; box-shadow: 0 8px 25px rgba(0,0,0,0.25); z-index: 100;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid var(--input-border); padding-bottom: 4px; font-size: 13px; font-weight: bold; color: var(--primary-color);">
-                            <span>😀 Emojik kiválasztása</span>
-                            <button onclick="toggleEmojiPicker()" style="background: transparent; border: none; cursor: pointer; font-size: 14px; color: inherit;">✖</button>
+                    <!-- Emoji Picker Popover -->
+                    <div id="emoji-picker" class="emoji-picker-popover" style="display: none;">
+                        <div class="emoji-picker-header">
+                            <span>😊 MSN Emotikonok</span>
+                            <button onclick="toggleEmojiPicker(event)" style="background: transparent; border: none; font-size: 14px; cursor: pointer; color: inherit;">✖</button>
                         </div>
-                        <div id="emoji-list-container" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; max-height: 180px; overflow-y: auto; text-align: center; font-size: 20px; cursor: pointer;">
-                        </div>
+                        <div class="emoji-grid" id="emoji-grid"></div>
                     </div>
                 </div>
             </div>
@@ -856,9 +933,277 @@
         let selectedFile = null;
         let replyToMessage = null;
 
-        let soundEnabled = localStorage.getItem('p2p_sound_enabled') !== 'false';
-        let soundType = localStorage.getItem('p2p_sound_type') || 'msn';
-        let lastNudgeTime = 0;
+        // MSN Audio & Emoji State
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        const msnEmojis = [
+            { code: ':-)', alt: ':)', symbol: '🙂', title: 'Smile (Mosoly)' },
+            { code: ';-)', alt: ';)', symbol: '😉', title: 'Wink (Kacsintás)' },
+            { code: ':-D', alt: ':D', symbol: '😃', title: 'Laugh (Nevetés)' },
+            { code: ':-P', alt: ':P', symbol: '😛', title: 'Tongue (Nyelvnyújtás)' },
+            { code: ':-p', alt: ':p', symbol: '😛', title: 'Tongue' },
+            { code: ':-O', alt: ':O', symbol: '😮', title: 'Surprised (Meglepett)' },
+            { code: ':-o', alt: ':o', symbol: '😮', title: 'Surprised' },
+            { code: ':-|', alt: ':|', symbol: '😐', title: 'Disappointed (Csalódott)' },
+            { code: ':\'(', symbol: '😢', title: 'Crying (Sírás)' },
+            { code: ':-@', alt: ':@', symbol: '😡', title: 'Angry (Mérges)' },
+            { code: ':-$', alt: ':$', symbol: '😳', title: 'Embarrassed (Pironkodó)' },
+            { code: '8-)', alt: '8)', symbol: '😎', title: 'Cool (Menő)' },
+            { code: '(A)', alt: '(a)', symbol: '😇', title: 'Angel (Angyal)' },
+            { code: '(6)', alt: '(H)', symbol: '😈', title: 'Devil (Ördög)' },
+            { code: '(h)', symbol: '😈', title: 'Devil' },
+            { code: '(L)', alt: '(l)', symbol: '❤️', title: 'Heart (Szív)' },
+            { code: '(U)', alt: '(u)', symbol: '💔', title: 'Broken Heart (Törött szív)' },
+            { code: '(K)', alt: '(k)', symbol: '💋', title: 'Kiss (Csók)' },
+            { code: '(F)', alt: '(f)', symbol: '🌹', title: 'Rose (Rózsa)' },
+            { code: '(W)', alt: '(w)', symbol: '🥀', title: 'Wilted Rose (Harmatos rózsa)' },
+            { code: '(*)', symbol: '⭐', title: 'Star (Csillag)' },
+            { code: '(8)', symbol: '🎵', title: 'Music (Zene)' },
+            { code: '(T)', alt: '(t)', symbol: '📞', title: 'Phone (Telefon)' },
+            { code: '(I)', alt: '(i)', symbol: '💡', title: 'Idea (Ötlet)' },
+            { code: '(C)', alt: '(c)', symbol: '☕', title: 'Coffee (Kávé)' },
+            { code: '(B)', alt: '(b)', symbol: '🍺', title: 'Beer (Sör)' },
+            { code: '(D)', alt: '(d)', symbol: '🍸', title: 'Drink (Ital)' },
+            { code: '(^)', symbol: '🎂', title: 'Cake (Torta)' },
+            { code: '(#)', symbol: '🌞', title: 'Sun (Nap)' },
+            { code: '(S)', alt: '(s)', symbol: '🌙', title: 'Moon (Hold)' },
+            { code: '(G)', alt: '(g)', symbol: '🎁', title: 'Gift (Ajándék)' },
+            { code: '(dog)', symbol: '🐶', title: 'Dog (Kutya)' },
+            { code: '(cat)', symbol: '🐱', title: 'Cat (Macska)' },
+            { code: '(car)', symbol: '🚗', title: 'Car (Autó)' },
+            { code: '(plane)', symbol: '✈️', title: 'Plane (Repülő)' },
+            { code: '(clock)', symbol: '⌛', title: 'Clock (Óra)' },
+            { code: '(P)', alt: '(p)', symbol: '📷', title: 'Camera (Kamera)' },
+            { code: '(pi)', symbol: '🍕', title: 'Pizza' },
+            { code: '(so)', symbol: '⚽', title: 'Soccer (Foci)' },
+            { code: '(R)', alt: '(r)', symbol: '☔', title: 'Umbrella (Esernyő)' },
+            { code: '(nudge)', symbol: '⚡', title: 'Rengés (Nudge)' }
+        ];
+
+        // MSN Audio Synthesizer (Web Audio API)
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('sound-toggle-btn');
+            if (btn) btn.textContent = soundEnabled ? '🔔 Hang: BE' : '🔕 Hang: KI';
+            showNotification(soundEnabled ? 'MSN Értesítési hangok bekapcsolva!' : 'Hangok kikapcsolva!');
+        }
+
+        function playMsnSound(type) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const now = audioCtx.currentTime;
+                
+                if (type === 'message') {
+                    // MSN Incoming message chime (F#5 to C#6)
+                    const osc1 = audioCtx.createOscillator();
+                    const osc2 = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc1.type = 'sine';
+                    osc2.type = 'triangle';
+                    
+                    osc1.frequency.setValueAtTime(740, now);
+                    osc1.frequency.setValueAtTime(1108.73, now + 0.12);
+                    
+                    osc2.frequency.setValueAtTime(1480, now);
+                    osc2.frequency.setValueAtTime(2217, now + 0.12);
+                    
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(0.25, now + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                    
+                    osc1.connect(gain);
+                    osc2.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + 0.5);
+                    osc2.stop(now + 0.5);
+                } else if (type === 'online') {
+                    // MSN Partner Online chime (E5, G#5, B5)
+                    const notes = [659.25, 830.61, 987.77];
+                    notes.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        const t = now + idx * 0.1;
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, t);
+                        gain.gain.setValueAtTime(0, t);
+                        gain.gain.linearRampToValueAtTime(0.2, t + 0.02);
+                        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(t);
+                        osc.stop(t + 0.35);
+                    });
+                } else if (type === 'nudge') {
+                    // MSN Nudge: Dramatic low bass thud + rattling burst
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(160, now);
+                    osc.frequency.exponentialRampToValueAtTime(35, now + 0.45);
+                    
+                    gain.gain.setValueAtTime(0.6, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
+                    
+                    const noiseOsc = audioCtx.createOscillator();
+                    const noiseGain = audioCtx.createGain();
+                    noiseOsc.type = 'square';
+                    noiseOsc.frequency.setValueAtTime(80, now + 0.05);
+                    noiseOsc.frequency.setValueAtTime(50, now + 0.2);
+                    noiseGain.gain.setValueAtTime(0.3, now + 0.05);
+                    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    noiseOsc.connect(noiseGain);
+                    noiseGain.connect(audioCtx.destination);
+                    noiseOsc.start(now + 0.05);
+                    noiseOsc.stop(now + 0.35);
+                } else if (type === 'send') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(880, now);
+                    osc.frequency.exponentialRampToValueAtTime(440, now + 0.05);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                }
+            } catch(e) {
+                console.warn('Audio play error:', e);
+            }
+        }
+
+        // MSN Nudge & Emoji Functions
+        function triggerNudgeEffect(senderName) {
+            playMsnSound('nudge');
+            const appEl = document.getElementById('app') || document.body;
+            appEl.classList.remove('nudge-anim');
+            void appEl.offsetWidth; // Force reflow
+            appEl.classList.add('nudge-anim');
+            setTimeout(() => {
+                appEl.classList.remove('nudge-anim');
+            }, 650);
+            showNotification(`⚡ ${senderName} RENGÉST KÜLDÖTT! (MSN Nudge)`, 'error');
+        }
+
+        function sendNudge() {
+            if (!currentTopic) {
+                showNotification('Kérlek válassz egy topikot a rengés küldéséhez!', 'error');
+                return;
+            }
+
+            const message = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                content: '⚡ RENGÉST KÜLDÖTT! (MSN Nudge)',
+                username: username,
+                timestamp: new Date().toISOString(),
+                isNudge: true
+            };
+
+            if (!data.messages[currentTopic]) {
+                data.messages[currentTopic] = [];
+            }
+            data.messages[currentTopic].push(message);
+            saveData();
+
+            broadcast({
+                type: 'new_message',
+                topicId: currentTopic,
+                message: message
+            });
+
+            renderMessages();
+            triggerNudgeEffect(username);
+        }
+
+        function toggleEmojiPicker(e) {
+            if (e) e.stopPropagation();
+            const picker = document.getElementById('emoji-picker');
+            if (!picker) return;
+            if (picker.style.display === 'flex') {
+                picker.style.display = 'none';
+            } else {
+                renderEmojiGrid();
+                picker.style.display = 'flex';
+            }
+        }
+
+        function renderEmojiGrid() {
+            const grid = document.getElementById('emoji-grid');
+            if (!grid || grid.children.length > 0) return;
+            grid.innerHTML = '';
+            
+            const addedSymbols = new Set();
+            msnEmojis.forEach(item => {
+                if (addedSymbols.has(item.symbol)) return;
+                addedSymbols.add(item.symbol);
+                
+                const div = document.createElement('div');
+                div.className = 'emoji-item';
+                div.textContent = item.symbol;
+                div.title = `${item.title} (${item.code})`;
+                div.onclick = (event) => {
+                    event.stopPropagation();
+                    insertEmojiIntoInput(item.code);
+                };
+                grid.appendChild(div);
+            });
+        }
+
+        function insertEmojiIntoInput(code) {
+            const input = document.getElementById('message-input');
+            if (!input) return;
+            const start = input.selectionStart || input.value.length;
+            const end = input.selectionEnd || input.value.length;
+            const text = input.value;
+            input.value = text.substring(0, start) + ' ' + code + ' ' + text.substring(end);
+            input.focus();
+            input.setSelectionRange(start + code.length + 2, start + code.length + 2);
+        }
+
+        function replaceMsnEmojis(text) {
+            if (!text) return '';
+            let result = text;
+            msnEmojis.forEach(item => {
+                const escapeRegex = (s) => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                let pattern = escapeRegex(item.code);
+                if (item.alt) {
+                    pattern += '|' + escapeRegex(item.alt);
+                }
+                const regex = new RegExp(pattern, 'g');
+                result = result.replace(regex, `<span class="msn-emoji" title="${item.code}">${item.symbol}</span>`);
+            });
+            return result;
+        }
+
+        document.addEventListener('click', (e) => {
+            const picker = document.getElementById('emoji-picker');
+            if (picker && picker.style.display === 'flex') {
+                if (!picker.contains(e.target) && !e.target.closest('button[onclick*="toggleEmojiPicker"]')) {
+                    picker.style.display = 'none';
+                }
+            }
+        });
 
         // Initialize
         function init() {
@@ -868,8 +1213,6 @@
             loadKnownUsers();
             loadDeletedTopics();
             loadHostedFiles();
-            updateSoundButton();
-            loadSoundType();
             
             const savedUsername = localStorage.getItem('p2p_username');
             const savedPeerId = localStorage.getItem('p2p_peer_id') || '1';
@@ -880,221 +1223,6 @@
                 document.getElementById('username-input').value = savedUsername;
                 setUsername();
             }
-        }
-
-        // Sound management (MSN Messenger notification chime using Web Audio API)
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            localStorage.setItem('p2p_sound_enabled', soundEnabled ? 'true' : 'false');
-            updateSoundButton();
-            if (soundEnabled) {
-                playMSNSound();
-                showNotification('🔊 Üzenethangok bekapcsolva');
-            } else {
-                showNotification('🔇 Üzenethangok kikapcsolva');
-            }
-        }
-
-        function changeSoundType(type) {
-            soundType = type;
-            localStorage.setItem('p2p_sound_type', type);
-            if (soundEnabled) {
-                playMSNSound();
-            }
-            showNotification(`Hangszín módosítva: ${getSoundTypeName(type)}`);
-        }
-
-        function getSoundTypeName(type) {
-            switch(type) {
-                case 'msn': return '🎵 MSN Csengés';
-                case 'buzz': return '🫨 MSN Rezgés';
-                case 'pop': return '🎈 Retro Pop';
-                case 'bell': return '🎺 Csengettyű';
-                default: return '🎵 MSN Csengés';
-            }
-        }
-
-        function loadSoundType() {
-            soundType = localStorage.getItem('p2p_sound_type') || 'msn';
-            const select = document.getElementById('sound-type-select');
-            if (select) select.value = soundType;
-        }
-
-        function updateSoundButton() {
-            const btn = document.getElementById('sound-toggle-btn');
-            if (btn) {
-                btn.innerHTML = soundEnabled ? '🔊 Hang' : '🔇 Néma';
-                btn.title = soundEnabled ? 'Üzenethangok kikapcsolása' : 'Üzenethangok bekapcsolása';
-                btn.style.opacity = soundEnabled ? '1' : '0.6';
-            }
-        }
-
-        function playMSNSound() {
-            if (!soundEnabled) return;
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                const now = ctx.currentTime;
-
-                if (soundType === 'buzz') {
-                    playNudgeBuzzSound();
-                    return;
-                } else if (soundType === 'pop') {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(300, now);
-                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
-                    gain.gain.setValueAtTime(0.3, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.08);
-                    return;
-                } else if (soundType === 'bell') {
-                    const osc1 = ctx.createOscillator();
-                    const osc2 = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc1.type = 'sine';
-                    osc1.frequency.setValueAtTime(880, now);
-                    osc2.type = 'sine';
-                    osc2.frequency.setValueAtTime(1760, now);
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-                    osc1.connect(gain);
-                    osc2.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc1.start(now);
-                    osc2.start(now);
-                    osc1.stop(now + 0.5);
-                    osc2.stop(now + 0.5);
-                    return;
-                }
-
-                // Default: Classic MSN Messenger chime (C5 -> G5)
-                const osc1 = ctx.createOscillator();
-                const osc2 = ctx.createOscillator();
-                const gain = ctx.createGain();
-
-                osc1.type = 'sine';
-                osc1.frequency.setValueAtTime(523.25, now);
-                
-                osc2.type = 'sine';
-                osc2.frequency.setValueAtTime(783.99, now + 0.08);
-
-                gain.gain.setValueAtTime(0.15, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-
-                osc1.connect(gain);
-                osc2.connect(gain);
-                gain.connect(ctx.destination);
-
-                osc1.start(now);
-                osc1.stop(now + 0.08);
-                osc2.start(now + 0.08);
-                osc2.stop(now + 0.35);
-            } catch(e) {
-                console.warn('Audio playback error:', e);
-            }
-        }
-
-        function playNudgeBuzzSound() {
-            if (!soundEnabled) return;
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                const now = ctx.currentTime;
-
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(110, now);
-                osc.frequency.linearRampToValueAtTime(150, now + 0.15);
-                osc.frequency.linearRampToValueAtTime(100, now + 0.4);
-
-                gain.gain.setValueAtTime(0.25, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
-
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-
-                osc.start(now);
-                osc.stop(now + 0.45);
-            } catch(e) {}
-        }
-
-        function sendNudge() {
-            if (!currentTopic) {
-                showNotification('Kérlek válassz egy topikot a rezgetéshez!', 'error');
-                return;
-            }
-
-            const now = Date.now();
-            if (now - lastNudgeTime < 3000) {
-                showNotification('Várj egy kicsit a következő rezgetés előtt! ⏳', 'error');
-                return;
-            }
-            lastNudgeTime = now;
-
-            triggerNudgeEffect(username, true);
-
-            broadcast({
-                type: 'nudge',
-                topicId: currentTopic,
-                username: username
-            });
-        }
-
-        function triggerNudgeEffect(senderName, isOwn = false) {
-            playNudgeBuzzSound();
-
-            const appEl = document.getElementById('app') || document.body;
-            appEl.classList.remove('nudge-shaking');
-            void appEl.offsetWidth;
-            appEl.classList.add('nudge-shaking');
-            setTimeout(() => {
-                appEl.classList.remove('nudge-shaking');
-            }, 650);
-
-            const msg = isOwn ? `🫨 Megrezgetted a beszélgetést!` : `🫨 @${senderName} MEGREZGETTE A BESZÉLGETÉST!`;
-            showNotification(msg);
-        }
-
-        function getComputedColorHex(propName, fallbackHex = '#667eea') {
-            let val = getComputedStyle(document.documentElement).getPropertyValue(propName).trim();
-            if (!val) val = fallbackHex;
-            return colorToHex(val, fallbackHex);
-        }
-
-        function colorToHex(colorStr, fallbackHex = '#667eea') {
-            if (!colorStr) return fallbackHex;
-            colorStr = colorStr.trim();
-            
-            if (colorStr.startsWith('#')) {
-                if (colorStr.length === 4) {
-                    return '#' + colorStr[1] + colorStr[1] + colorStr[2] + colorStr[2] + colorStr[3] + colorStr[3];
-                }
-                if (colorStr.length === 7) return colorStr;
-            }
-            
-            const match = colorStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
-            if (match) {
-                const r = parseInt(match[1]).toString(16).padStart(2, '0');
-                const g = parseInt(match[2]).toString(16).padStart(2, '0');
-                const b = parseInt(match[3]).toString(16).padStart(2, '0');
-                return `#${r}${g}${b}`;
-            }
-
-            const gradMatch = colorStr.match(/#[0-9a-fA-F]{3,6}/);
-            if (gradMatch) {
-                return colorToHex(gradMatch[0], fallbackHex);
-            }
-            
-            return fallbackHex;
         }
 
         function loadHostedFiles() {
@@ -1120,18 +1248,20 @@
         function openThemeModal() {
             const modal = document.getElementById('theme-modal');
             if (modal) {
-                document.getElementById('picker-primary').value = getComputedColorHex('--primary-color', '#667eea');
-                document.getElementById('picker-bg').value = getComputedColorHex('--bg-gradient', '#764ba2');
-                document.getElementById('picker-card').value = getComputedColorHex('--card-bg', '#ffffff');
-                document.getElementById('picker-text').value = getComputedColorHex('--text-color', '#333333');
-                document.getElementById('picker-own-msg').value = getComputedColorHex('--own-msg-bg', '#667eea');
-                document.getElementById('picker-own-msg-text').value = getComputedColorHex('--own-msg-text', '#ffffff');
-                document.getElementById('picker-other-msg').value = getComputedColorHex('--other-msg-bg', '#ffffff');
-                document.getElementById('picker-other-msg-text').value = getComputedColorHex('--other-msg-text', '#333333');
-
-                const customPicker = document.getElementById('custom-color-picker');
-                if (customPicker) customPicker.value = getComputedColorHex('--primary-color', '#667eea');
-
+                const fullSaved = localStorage.getItem('p2p_full_theme');
+                if (fullSaved) {
+                    try {
+                        const t = JSON.parse(fullSaved);
+                        if (t.primary) document.getElementById('picker-primary').value = t.primary;
+                        if (t.bg) document.getElementById('picker-bg').value = t.bg;
+                        if (t.card) document.getElementById('picker-card').value = t.card;
+                        if (t.text) document.getElementById('picker-text').value = t.text;
+                        if (t.ownMsg) document.getElementById('picker-own-msg').value = t.ownMsg;
+                        if (t.ownMsgText) document.getElementById('picker-own-msg-text').value = t.ownMsgText;
+                        if (t.otherMsg) document.getElementById('picker-other-msg').value = t.otherMsg;
+                        if (t.otherMsgText) document.getElementById('picker-other-msg-text').value = t.otherMsgText;
+                    } catch(e) {}
+                }
                 modal.style.display = 'flex';
             }
         }
@@ -1232,9 +1362,6 @@
             const bgGrad = `linear-gradient(135deg, ${hexColor} 0%, ${adjustColor(hexColor, -40)} 100%)`;
             document.documentElement.style.setProperty('--bg-gradient', bgGrad);
             
-            document.documentElement.style.setProperty('--own-msg-bg', hexColor);
-            document.documentElement.style.setProperty('--own-msg-text', '#ffffff');
-
             localStorage.setItem('p2p_theme', 'custom');
             localStorage.setItem('p2p_custom_color', hexColor);
             
@@ -1396,6 +1523,7 @@
 
             conn.on('open', () => {
                 showNotification('Új peer csatlakozott!');
+                playMsnSound('online');
                 // Send current data to new peer
                 conn.send({ type: 'sync', data: data });
                 // Send presence info
@@ -1456,6 +1584,7 @@
                         data.messages[received.topicId] = [];
                         saveData();
                         renderTopics();
+                        playMsnSound('message');
                     }
                     break;
                 case 'new_message':
@@ -1465,20 +1594,13 @@
                     }
                     data.messages[received.topicId].push(received.message);
                     saveData();
-                    if (received.message && received.message.username !== username) {
-                        playMSNSound();
-                    }
                     if (currentTopic === received.topicId) {
                         renderMessages();
                     }
-                    break;
-                case 'nudge':
-                    if (received.topicId === currentTopic) {
-                        triggerNudgeEffect(received.username, false);
-                    } else {
-                        const tName = data.topics[received.topicId] ? data.topics[received.topicId].name : 'egyik topikot';
-                        showNotification(`🫨 @${received.username} megrezgette a(z) "${tName}" topikot!`);
-                        playNudgeBuzzSound();
+                    if (received.message.isNudge) {
+                        triggerNudgeEffect(received.message.username);
+                    } else if (received.message.username !== username) {
+                        playMsnSound('message');
                     }
                     break;
                 case 'presence':
@@ -2018,106 +2140,32 @@
                 message: message
             });
 
+            playMsnSound('send');
+
             input.value = '';
             removeSelectedFile();
             cancelReply();
             renderMessages();
         }
 
-        // Emoji Picker functions
-        const popularEmojis = [
-            '😂', '😄', '😊', '😍', '🤣', '🥰', '😇', '😎', '😜', '🙈', '🤩', '🥳', '😈', '🤯', '😭', '😱', '🥺',
-            '👍', '👎', '👏', '🙌', '🤝', '🔥', '❤️', '💖', '🎉', '💡', '✨', '🚀', '💯', '⭐', '💩', '🍀', '🎈',
-            '🐱', '🐶', '🎮', '🎧', '🍕', '☕', '🍺', '📱', '💻', '⚽', '🎨', '🍿', '🎬', '🎵', '🤔', '💬', '👀', '💪', '🙏'
-        ];
-
-        function initEmojiPicker() {
-            const container = document.getElementById('emoji-list-container');
-            if (!container) return;
-            container.innerHTML = '';
-            popularEmojis.forEach(emoji => {
-                const span = document.createElement('span');
-                span.textContent = emoji;
-                span.style.padding = '4px';
-                span.style.borderRadius = '6px';
-                span.style.transition = 'background 0.2s, transform 0.1s';
-                span.style.userSelect = 'none';
-                span.onmouseover = () => { span.style.background = 'rgba(0,0,0,0.1)'; span.style.transform = 'scale(1.25)'; };
-                span.onmouseout = () => { span.style.background = 'transparent'; span.style.transform = 'scale(1)'; };
-                span.onclick = () => insertEmoji(emoji);
-                container.appendChild(span);
-            });
-        }
-
-        function toggleEmojiPicker() {
-            const popup = document.getElementById('emoji-picker-popup');
-            if (!popup) return;
-            if (popup.style.display === 'none' || !popup.style.display) {
-                initEmojiPicker();
-                popup.style.display = 'block';
-            } else {
-                popup.style.display = 'none';
-            }
-        }
-
-        function insertEmoji(emoji) {
-            const input = document.getElementById('message-input');
-            if (!input) return;
-            const start = input.selectionStart || input.value.length;
-            const end = input.selectionEnd || input.value.length;
-            const text = input.value;
-            input.value = text.substring(0, start) + emoji + text.substring(end);
-            input.focus();
-            const newPos = start + emoji.length;
-            input.setSelectionRange(newPos, newPos);
-        }
-
         function formatMessageContent(content) {
             if (!content) return '';
             let text = escapeHtml(content);
 
-            // Convert http:// and https:// URLs to clickable links opening in a new tab
-            const httpUrlRegex = /(https?:\/\/[^\s<]+)/gi;
-            text = text.replace(httpUrlRegex, function(url) {
-                // If it's a direct video file (.mp4, .webm, .ogv), render link + video player
-                if (/\.(mp4|webm|ogv)(\?.*)?$/i.test(url)) {
-                    return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline;">${url}</a><br><video controls src="${url}" style="max-width: 100%; max-height: 320px; border-radius: 8px; margin-top: 6px; display: block;"></video>`;
-                }
+            // Direct video file URLs (.mp4, .webm, .ogv) -> inline video player
+            const directVideoRegex = /(https?:\/\/\S+\.(?:mp4|webm|ogv))(?:\S*)?/gi;
+            text = text.replace(directVideoRegex, function(match, url) {
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline;">${url}</a><br><video controls src="${url}" style="max-width: 100%; max-height: 320px; border-radius: 8px; margin-top: 6px; display: block;"></video>`;
+            });
+
+            // Convert all web URLs (including YouTube links) to clean clickable links opening in a new tab
+            const urlRegex = /(?<!src="|href=")(https?:\/\/[^\s<]+)/gi;
+            text = text.replace(urlRegex, function(url) {
                 return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline;">${url}</a>`;
             });
 
-            // Convert www. URLs (without http:// or https://) to clickable links
-            const wwwUrlRegex = /(^|[^\/])(www\.[^\s<]+)/gi;
-            text = text.replace(wwwUrlRegex, function(match, prefix, wwwUrl) {
-                return `${prefix}<a href="https://${wwwUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline;">${wwwUrl}</a>`;
-            });
-
-            // Convert classic MSN Messenger text shortcuts & emoticons to emojis
-            text = text.replace(/(?<=^|\s)\(H\)(?=\s|$)/gi, '😎')
-                       .replace(/(?<=^|\s)\(A\)(?=\s|$)/gi, '😇')
-                       .replace(/(?<=^|\s)\(6\)(?=\s|$)/gi, '😈')
-                       .replace(/(?<=^|\s)\(Y\)(?=\s|$)/gi, '👍')
-                       .replace(/(?<=^|\s)\(N\)(?=\s|$)/gi, '👎')
-                       .replace(/(?<=^|\s)\(K\)(?=\s|$)/gi, '💋')
-                       .replace(/(?<=^|\s)\(L\)(?=\s|$)/gi, '❤️')
-                       .replace(/(?<=^|\s)\(U\)(?=\s|$)/gi, '💔')
-                       .replace(/(?<=^|\s)\(P\)(?=\s|$)/gi, '🍕')
-                       .replace(/(?<=^|\s)\(B\)(?=\s|$)/gi, '🍺')
-                       .replace(/(?<=^|\s)\(M\)(?=\s|$)/gi, '💬')
-                       .replace(/(?<=^|\s)\(F\)(?=\s|$)/gi, '🌹')
-                       .replace(/(?<=^|\s)\(S\)(?=\s|$)/gi, '🌙')
-                       .replace(/(?<=^|\s)\(O\)(?=\s|$)/gi, '⏰')
-                       .replace(/(?<=^|\s)\(G\)(?=\s|$)/gi, '🎁')
-                       .replace(/(?<=^|\s):D(?=\s|$)/g, '😀')
-                       .replace(/(?<=^|\s):-D(?=\s|$)/g, '😀')
-                       .replace(/(?<=^|\s):\)(?=\s|$)/g, '😊')
-                       .replace(/(?<=^|\s):-\)(?=\s|$)/g, '😊')
-                       .replace(/(?<=^|\s);\)(?=\s|$)/g, '😉')
-                       .replace(/(?<=^|\s);-\)(?=\s|$)/g, '😉')
-                       .replace(/(?<=^|\s)&lt;3(?=\s|$)/g, '❤️')
-                       .replace(/(?<=^|\s):P(?=\s|$)/gi, '😜')
-                       .replace(/(?<=^|\s):-\((?=\s|$)/g, '🙁')
-                       .replace(/(?<=^|\s):\((?=\s|$)/g, '🙁');
+            // Convert MSN emojis
+            text = replaceMsnEmojis(text);
 
             return text;
         }
@@ -2153,7 +2201,7 @@
             messages.forEach(msg => {
                 const div = document.createElement('div');
                 div.id = 'msg-' + msg.id;
-                div.className = 'message' + (msg.username === username ? ' own' : '');
+                div.className = msg.isNudge ? 'message nudge-message-box' : ('message' + (msg.username === username ? ' own' : ''));
                 
                 const date = new Date(msg.timestamp);
                 const timeStr = date.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' });

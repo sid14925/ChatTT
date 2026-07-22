@@ -1,0 +1,37 @@
+{
+  "name": "chattt-msn-messenger",
+  "version": "1.0.0",
+  "description": "P2P ChatTT - MSN Messenger Edition",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable"
+  },
+  "keywords": [
+    "msn",
+    "p2p",
+    "chat",
+    "messenger"
+  ],
+  "author": "sid14925",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.chattt.msn.p2p",
+    "productName": "ChatTT MSN Messenger",
+    "win": {
+      "target": "portable",
+      "artifactName": "ChatTT_MSN_Messenger.exe"
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.html",
+      "main.js"
+    ]
+  }
+}
