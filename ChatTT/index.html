@@ -2156,9 +2156,12 @@
             // Peer count is now shown in user list
         }
 
-        const CURRENT_APP_VERSION = "2.4";
+        const CURRENT_APP_VERSION = "2.5";
+        let detectedNewVersion = null;
 
         function checkAppVersion() {
+            if (!window.location.protocol.startsWith('http')) return;
+
             fetch('version.json?t=' + Date.now())
                 .then(res => {
                     if (res.ok) return res.json();
@@ -2166,11 +2169,15 @@
                 })
                 .then(data => {
                     if (data && data.version && data.version !== CURRENT_APP_VERSION) {
-                        showVersionUpdateModal(data.version);
+                        const dismissedVer = sessionStorage.getItem('dismissed_update_version');
+                        if (dismissedVer !== data.version) {
+                            detectedNewVersion = data.version;
+                            showVersionUpdateModal(data.version);
+                        }
                     }
                 })
                 .catch(e => {
-                    // Ignore offline/file protocol fetch errors
+                    // Ignore network errors
                 });
         }
 
@@ -2186,10 +2193,13 @@
         function closeVersionModal() {
             const modal = document.getElementById('version-update-modal');
             if (modal) modal.style.display = 'none';
+            if (detectedNewVersion) {
+                sessionStorage.setItem('dismissed_update_version', detectedNewVersion);
+            }
         }
 
-        setInterval(checkAppVersion, 10000);
-        setTimeout(checkAppVersion, 3000);
+        setInterval(checkAppVersion, 15000);
+        setTimeout(checkAppVersion, 4000);
 
         let activeMediaCall = null;
         let localAudioStream = null;
