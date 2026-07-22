@@ -448,7 +448,24 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
-            height: 600px;
+            min-height: 650px;
+            height: calc(100vh - 130px);
+        }
+
+        #discord-stream-container.is-pip {
+            position: fixed !important;
+            bottom: 24px !important;
+            right: 24px !important;
+            width: 340px !important;
+            height: 220px !important;
+            margin: 0 !important;
+            z-index: 99999 !important;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.6) !important;
+            border: 2px solid var(--primary-color) !important;
+        }
+
+        #discord-stream-container.is-pip #docked-stream-video {
+            max-height: 175px !important;
         }
 
         .chat-header {
@@ -1107,16 +1124,17 @@
                 </div>
 
                 <!-- Docked Live Video Stream Player (Discord Style - Non-Blocking Chat) -->
-                <div id="discord-stream-container" style="display: none; background: #0b0f19; border-radius: 10px; margin: 10px 10px 0 10px; border: 2px solid var(--primary-color); overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); flex-direction: column;">
-                    <div style="background: rgba(15,23,42,0.9); color: white; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <div id="discord-stream-container" style="display: none; background: #0b0f19; border-radius: 10px; margin: 0 0 12px 0; border: 2px solid var(--primary-color); overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); flex-direction: column; flex-shrink: 0;">
+                    <div style="background: rgba(15,23,42,0.9); color: white; padding: 6px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; border-bottom: 1px solid rgba(255,255,255,0.1);">
                         <span id="docked-stream-title" style="font-weight: bold; color: #818cf8; display: flex; align-items: center; gap: 6px;">🔴 LIVE Stream</span>
-                        <div style="display: flex; gap: 8px;">
-                            <button onclick="toggleStreamFullscreen()" class="btn" style="padding: 3px 10px; font-size: 12px; background: rgba(255,255,255,0.15); color: white; cursor: pointer;" title="Teljes képernyő">⛶ Teljes Képernyő</button>
-                            <button onclick="leaveStream()" class="btn btn-danger" style="padding: 3px 10px; font-size: 12px; cursor: pointer;">❌ Stream Bezárása</button>
+                        <div style="display: flex; gap: 6px;">
+                            <button id="pip-toggle-btn" onclick="togglePipMode()" class="btn" style="padding: 3px 8px; font-size: 11px; background: rgba(255,255,255,0.15); color: white; cursor: pointer;" title="Lebegő mini ablakba helyezés">📌 Mini Nézet (PIP)</button>
+                            <button onclick="toggleStreamFullscreen()" class="btn" style="padding: 3px 8px; font-size: 11px; background: rgba(255,255,255,0.15); color: white; cursor: pointer;" title="Teljes képernyő">⛶ Teljes Képernyő</button>
+                            <button onclick="leaveStream()" class="btn btn-danger" style="padding: 3px 8px; font-size: 11px; cursor: pointer;">❌ Stream Bezárása</button>
                         </div>
                     </div>
                     <div style="position: relative; background: #000; display: flex; justify-content: center; align-items: center;">
-                        <video id="docked-stream-video" autoplay playsinline style="width: 100%; max-height: 380px; object-fit: contain; background: #000; display: block;"></video>
+                        <video id="docked-stream-video" autoplay playsinline style="width: 100%; max-height: 240px; object-fit: contain; background: #000; display: block;"></video>
                     </div>
                 </div>
 
@@ -2047,14 +2065,13 @@
                     }
                     break;
                 case 'presence':
-                    // Update known users with peer's info
                     if (received.peerId && received.username) {
                         knownUsers[received.peerId] = {
                             username: received.username,
-                            lastSeen: Date.now()
+                            lastSeen: Date.now(),
+                            isStreaming: !!received.isStreaming
                         };
                     }
-                    // Merge known users from peer
                     if (received.knownUsers) {
                         for (const pid in received.knownUsers) {
                             if (!knownUsers[pid] || knownUsers[pid].lastSeen < received.knownUsers[pid].lastSeen) {
@@ -2066,7 +2083,6 @@
                     renderUserList();
                     break;
                 case 'presence_request':
-                    // Send our presence info back
                     conn.send({ 
                         type: 'presence', 
                         peerId: peer ? peer.id : '', 
@@ -2185,7 +2201,7 @@
             // Peer count is now shown in user list
         }
 
-        const CURRENT_APP_VERSION = "2.6";
+        const CURRENT_APP_VERSION = "2.7";
         let detectedNewVersion = null;
 
         function checkAppVersion() {
@@ -2270,13 +2286,19 @@
             }
 
             onlinePeers.forEach(({ peerId, userInfo, isOwn, isConnected }) => {
+                const isUserStreaming = !!userInfo.isStreaming;
                 const div = document.createElement('div');
                 div.className = 'user-item';
                 div.innerHTML = `
-                    <div class="user-name"><strong>@${escapeHtml(userInfo.username)}</strong> <span style="font-size: 11px; opacity: 0.6;">(${escapeHtml(peerId)})</span></div>
+                    <div class="user-name">
+                        <strong>@${escapeHtml(userInfo.username)}</strong> 
+                        <span style="font-size: 11px; opacity: 0.6;">(${escapeHtml(peerId)})</span>
+                        ${isUserStreaming ? `<span style="background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-left: 4px; display: inline-block;">🔴 LIVE STREAM</span>` : ''}
+                    </div>
                     <span class="user-status online">Online</span>
-                    <div style="display: flex; gap: 4px;">
-                        ${!isOwn && isConnected ? `<button class="btn btn-primary" onclick="startVoiceCall('${peerId}')" style="padding: 3px 8px; font-size: 11px;" title="Hanghívás indítása">🎙️ Hívás</button>` : ''}
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        ${isUserStreaming && !isOwn ? `<button class="btn" onclick="watchUserStream('${peerId}')" style="background: #6366f1; color: white; padding: 3px 8px; font-size: 11px; font-weight: bold;" title="Kattints a stream élő nézéséhez">▶️ Nézés</button>` : ''}
+                        ${!isOwn && isConnected && !isUserStreaming ? `<button class="btn btn-primary" onclick="startVoiceCall('${peerId}')" style="padding: 3px 8px; font-size: 11px;" title="Hanghívás indítása">🎙️ Hívás</button>` : ''}
                         <button class="connect-btn ${isOwn ? 'own' : isConnected ? 'connected' : ''}" 
                                 onclick="connectToPeerById('${peerId}')"
                                 ${isOwn || isConnected ? 'disabled' : ''}>
@@ -2286,6 +2308,11 @@
                 `;
                 container.appendChild(div);
             });
+        }
+
+        function watchUserStream(targetPeerId) {
+            activeStreamCallerId = targetPeerId;
+            acceptStreamInvite();
         }
 
         // Voice Call Functions
@@ -2517,6 +2544,16 @@
                         showNotification('Nem sikerült elindítani a képernyőmegosztást.', 'error');
                     }
                 });
+        }
+
+        function togglePipMode() {
+            const container = document.getElementById('discord-stream-container');
+            const btn = document.getElementById('pip-toggle-btn');
+            if (!container) return;
+            container.classList.toggle('is-pip');
+            const isPip = container.classList.contains('is-pip');
+            if (btn) btn.textContent = isPip ? '📌 Beillesztés Chatbe' : '📌 Mini Nézet (PIP)';
+            showNotification(isPip ? 'Stream átváltva lebegő mini-lejátszó módba!' : 'Stream visszaillesztve a chat tetejére.');
         }
 
         function showDockedStream(stream, titleText) {

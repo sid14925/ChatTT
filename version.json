@@ -1,5 +1,5 @@
 {
-  "version": "2.6",
-  "buildDate": "2026-07-22T21:32:00Z",
-  "changelog": "Added Discord-style Opt-In Stream Invitations, Docked In-Chat Live Video Player (non-blocking chat), and classic MSN smile.png emoji button icon"
+  "version": "2.7",
+  "buildDate": "2026-07-22T21:35:00Z",
+  "changelog": "Added P2P Stream Signaling, Live Stream Badges in User List, Direct Watch Buttons, and Floating PIP Mini-Player mode so video never obscures chat"
 }
