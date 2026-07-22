@@ -1162,14 +1162,14 @@
         function playMsnSound(type) {
             if (!soundEnabled) return;
             try {
-                let fileName = 'type.mp3';
-                if (type === 'message') fileName = 'type.mp3';
-                else if (type === 'online') fileName = 'online.mp3';
-                else if (type === 'nudge') fileName = 'nudge.mp3';
-                else if (type === 'send') fileName = 'outgoing.mp3';
-                else if (type === 'email') fileName = 'newemail.mp3';
-                else if (type === 'alert') fileName = 'newalert.mp3';
-                else if (type === 'phone') fileName = 'phone.mp3';
+                let fileName = 'type.wav';
+                if (type === 'message') fileName = 'type.wav';
+                else if (type === 'online') fileName = 'online.wav';
+                else if (type === 'nudge') fileName = 'nudge.wav';
+                else if (type === 'send') fileName = 'outgoing.wav';
+                else if (type === 'email') fileName = 'newemail.wav';
+                else if (type === 'alert') fileName = 'newalert.wav';
+                else if (type === 'phone') fileName = 'phone.wav';
 
                 const audio = new Audio('sounds/' + fileName);
                 audio.play().catch(e => console.warn('Audio play error:', e));
